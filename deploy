@@ -1,0 +1,7 @@
+#!/bin/sh
+set -e
+git pull
+git commit -am 'automatic commit as part of deploy'
+git push
+./site build
+rsync -avz --delete --rsh "ssh -i $HOME/.ssh/id_nearlyfreespeach" _site/ bergey_teallabs@ssh.phx.nearlyfreespeech.net:
