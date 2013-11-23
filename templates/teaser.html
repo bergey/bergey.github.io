@@ -1,0 +1,13 @@
+<h2>$title$</h2>
+<div class="info">
+    Posted on $date$
+    $if(author)$
+        by $author$
+    $endif$
+</div>
+$if(teaser)$
+  <p>$teaser$</p>
+  <a href="$url$">Read more</a>
+$else$
+  $body$
+$endif$
