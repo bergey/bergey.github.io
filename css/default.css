@@ -1,4 +1,8 @@
+@import  url(http://fonts.googleapis.com/css?family=EB+Garamond);
+@import url(http://fonts.googleapis.com/css?family=Belleza);
+
 body {
+   font-family: EB Garamond;
    margin: 0px auto 0px auto;
 }
 
@@ -11,18 +15,18 @@ div#header {
 div#logo a {
    color: black;
    font-size: 18px;
-   font-weight: bold;
    text-decoration: none;
 }
 
 
 div.sidebar {
    text-align: left;
-   width:8em;
+   width:6em;
    margin-left: 4em;
    margin-top: 4em;
    position:fixed;
    float: left;
+   font-family: Belleza;
 }
 
 div.content {
@@ -34,9 +38,6 @@ div.content {
     div.content {
        margin: 0em auto 0 10em;
     }
-
-   div.sidebar {
-   }
 
 }
 /* below 40em, just use the whole screen */
@@ -55,16 +56,14 @@ div.content {
       margin: 0 auto;
    }
 
-   div.sidebar
 }
 
 div.sidebar a {
-   color: black;
+   color: rgb(20, 140, 140);
    font-size: 110%;
-   font-weight: bold;
    text-decoration: none;
    text-transform: uppercase;
-   line-height: 120%;
+   line-height: 140%;
 }
 
 div.footer {
@@ -77,10 +76,14 @@ div.footer {
 }
 
 h1 {
+   color: rgb(20, 140, 140);
+   font-family: Belleza, sans-serif;
    font-size: 24px;
 }
 
 h2 {
+   color: rgb(20, 140, 140);
+   font-family: Belleza, sans-serif;
    font-size: 20px;
 }
 
@@ -88,4 +91,9 @@ div.info {
    color: #555;
    font-size: 14px;
    font-style: italic;
+}
+
+p {
+   font-family: EB Garamond, serif;
+   font-size: 14px;
 }
