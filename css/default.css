@@ -1,56 +1,91 @@
 body {
-    color: black;
-    font-size: 16px;
-    margin: 0px auto 0px auto;
-    width: 600px;
+   margin: 0px auto 0px auto;
 }
 
 div#header {
-    border-bottom: 2px solid black;
-    margin-bottom: 30px;
-    padding: 12px 0px 12px 0px;
+   border-bottom: 2px solid black;
+   margin-bottom: 30px;
+   padding: 12px 0px 12px 0px;
 }
 
 div#logo a {
-    color: black;
-    float: left;
-    font-size: 18px;
-    font-weight: bold;
-    text-decoration: none;
+   color: black;
+   font-size: 18px;
+   font-weight: bold;
+   text-decoration: none;
 }
 
-div#header #navigation {
-    text-align: right;
+
+div.sidebar {
+   text-align: left;
+   width:8em;
+   margin-left: 4em;
+   margin-top: 4em;
+   position:fixed;
+   float: left;
 }
 
-div#header #navigation a {
-    color: black;
-    font-size: 18px;
-    font-weight: bold;
-    margin-left: 12px;
-    text-decoration: none;
-    text-transform: uppercase;
+div.content {
+   width: 40em;
+   margin: 0px auto;
 }
 
-div#footer {
-    border-top: solid 2px black;
-    color: #555;
-    font-size: 12px;
-    margin-top: 30px;
-    padding: 12px 0px 12px 0px;
-    text-align: right;
+@media screen and (max-width: 900px) {
+    div.content {
+       margin: 0em auto 0 10em;
+    }
+
+   div.sidebar {
+   }
+
+}
+/* below 40em, just use the whole screen */
+@media screen and (max-width: 750px) {
+   div.sidebar {
+      width: 100%;
+      margin: 0 auto;
+      float: none;
+      position: static;
+      text-align: center;
+   }
+
+   div.content {
+      width: 98%;
+      max-width: 40em;
+      margin: 0 auto;
+   }
+
+   div.sidebar
+}
+
+div.sidebar a {
+   color: black;
+   font-size: 110%;
+   font-weight: bold;
+   text-decoration: none;
+   text-transform: uppercase;
+   line-height: 120%;
+}
+
+div.footer {
+   border-top: solid 2px black;
+   color: #555;
+   font-size: 12px;
+   margin-top: 30px;
+   padding: 12px 0px 12px 0px;
+   text-align: right;
 }
 
 h1 {
-    font-size: 24px;
+   font-size: 24px;
 }
 
 h2 {
-    font-size: 20px;
+   font-size: 20px;
 }
 
 div.info {
-    color: #555;
-    font-size: 14px;
-    font-style: italic;
+   color: #555;
+   font-size: 14px;
+   font-style: italic;
 }
