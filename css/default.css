@@ -4,6 +4,8 @@
 body {
    font-family: EB Garamond;
    margin: 0px auto 0px auto;
+   font-size: 14px;
+
 }
 
 div#header {
@@ -27,6 +29,9 @@ div.sidebar {
    position:fixed;
    float: left;
    font-family: Belleza;
+   color: rgb(20, 140, 140);
+   font-size: 24px;
+
 }
 
 div.content {
@@ -60,7 +65,6 @@ div.content {
 
 div.sidebar a {
    color: rgb(20, 140, 140);
-   font-size: 110%;
    text-decoration: none;
    text-transform: uppercase;
    line-height: 140%;
@@ -95,5 +99,4 @@ div.info {
 
 p {
    font-family: EB Garamond, serif;
-   font-size: 14px;
-}
+ }
