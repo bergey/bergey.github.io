@@ -81,12 +81,14 @@ div.footer {
 
 h1 {
    color: rgb(20, 140, 140);
+   font-weight: normal;
    font-family: Belleza, sans-serif;
    font-size: 24px;
 }
 
 h2 {
    color: rgb(20, 140, 140);
+   font-weight: normal;
    font-family: Belleza, sans-serif;
    font-size: 20px;
 }
