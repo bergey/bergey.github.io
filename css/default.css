@@ -24,8 +24,8 @@ div#logo a {
 div.sidebar {
    text-align: left;
    width:6em;
-   margin-left: 4em;
-   margin-top: 4em;
+   margin-left: 2em;
+   margin-top: 2em;
    position:fixed;
    float: left;
    font-family: Belleza;
@@ -41,7 +41,7 @@ div.content {
 
 @media screen and (max-width: 900px) {
     div.content {
-       margin: 0em auto 0 10em;
+       margin: 0em auto 0 12em;
     }
 
 }
