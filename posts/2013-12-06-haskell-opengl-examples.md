@@ -1,3 +1,8 @@
+---
+title: Learning OpenGL in Haskell
+author: Daniel
+tags: Daniel, haskell, opengl, diagrams
+---
 Earlier this year I decided to learn OpenGL, as part of a project to
 add 3D capabilities to the Haskell library [Diagrams][].  Never having
 used OpenGL before, I didn't know quite what I was getting into.
