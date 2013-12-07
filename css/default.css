@@ -1,10 +1,17 @@
-@import  url(http://fonts.googleapis.com/css?family=EB+Garamond);
+@import url(http://fonts.googleapis.com/css?family=EB+Garamond);
 @import url(http://fonts.googleapis.com/css?family=Belleza);
+@import url(http://fonts.googleapis.com/css?family=Inconsolata);
 
 body {
    font-family: EB Garamond;
    margin: 0px auto 0px auto;
    font-size: 14px;
+
+}
+
+code {
+   font-size: 14px;
+   font-family: Inconsolata;
 
 }
 
