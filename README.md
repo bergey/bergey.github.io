@@ -13,8 +13,8 @@ This is a static website compiled with [Hakyll](http://jaspervdj.be/hakyll/).  T
 # Usage notes
 
 Recompiling `Site.hs` by calling `ghc` is only necessary if `Site.hs`
-has changed, which should be fairly rare.  `site build` converts
-markdown to HTML, and a few other things, thenlaunches a server so the
+has changed, which should be fairly rare.  `site watch` converts
+markdown to HTML, and a few other things, then launches a server so the
 site can be previewed at `localhost:8000`.  While running, it also
 rebuilds after any changes to the files.  `./deploy` uploads the
 compiled site via ssh.  It also runs `site build`, should you want to
