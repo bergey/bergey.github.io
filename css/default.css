@@ -100,6 +100,13 @@ h2 {
    font-size: 20px;
 }
 
+h3 {
+   color: #555;
+   font-size: 18px;
+   font-family: Belleza, sans-serif;
+   font-weight: normal;
+}
+
 div.info {
    color: #555;
    font-size: 14px;
@@ -109,3 +116,7 @@ div.info {
 p {
    font-family: EB Garamond, serif;
  }
+
+img {
+   max-width: 100%
+}
