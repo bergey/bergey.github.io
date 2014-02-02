@@ -3,7 +3,7 @@ title: When the Z Axis Locks Itself
 author: Daniel
 tags: Daniel, cnc, router, woodworking, machinery
 ---
-Yesterday Christalee and I started cutting some plywood boxes on the Torchmate CNC router in her shop.  I raised the Z-axis too far trying to get clearance, and we lost an hour figuring out how to unjam it.  We couldn't find notes on this problem online, so here they are.
+Yesterday Christalee and I started cutting some plywood boxes on the Torchmate 2 CNC router in her shop.  I raised the Z-axis too far trying to get clearance, and we lost an hour figuring out how to unjam it.  We couldn't find notes on this problem online, so here they are.
 
 ### Symptoms
 Traveling upwards, the z-axis stops moving, and instead clicks.  This is the sound of the stepper motor slipping.  If you try to jog the axis down, the motor makes the same clicking sound, but the axis does not move.
@@ -20,3 +20,4 @@ With the adjustment arm out of the way, you can press on the nut (circled in whi
 Here's another picture, with the router installed.  Once again, the bolt to remove is circled in red.
 
 ![](http://bergey.s3.amazonaws.com/teallabs/z-with-router.svg)
+
