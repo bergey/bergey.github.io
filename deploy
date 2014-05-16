@@ -6,4 +6,4 @@ git commit -am 'automatic commit as part of deploy'
 git push
 set -e
 ./site build
-rsync -avz --delete --rsh "ssh -i $HOME/.ssh/id_nearlyfreespeach" _site/ bergey_teallabs@ssh.phx.nearlyfreespeech.net:
+rsync -avz --delete --rsh "ssh -i $HOME/.ssh/id_nearlyfreespeech" _site/ bergey_teallabs@ssh.phx.nearlyfreespeech.net:
