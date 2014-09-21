@@ -11,4 +11,4 @@ title: Daniel Bergey
 
 * A. Rudd, H. Henderson, D. Bergey, D. Shirey. *RP-1449: Energy Efficient and Cost Assessment of Humidity Control Options for Residential Buildings.* ASHRAE, 2012.  [(PDF behind paywall)](http://www.techstreet.com/products/1856921/product_items/4874670href)
 
-* Daniel Bergey and Kohta Ueno. “New England Net Zero Production Houses,” *ASHRAE Transactions* 117(2) (2011). [(pdf)](http://www.buildingscience.com/documents/confpapers/cp-1103-new-england-net-zero-production-houses/view})
+* Daniel Bergey and Kohta Ueno. “New England Net Zero Production Houses,” *ASHRAE Transactions* 117(2) (2011). [(pdf)](http://www.buildingscience.com/documents/confpapers/cp-1103-new-england-net-zero-production-houses/view)
