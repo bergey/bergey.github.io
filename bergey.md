@@ -11,8 +11,6 @@ physics and energy use of buildings.  He’s interested in open hardware
 beyond microelectronics and 3D printers, and in Free software for
 design.  He can be reached at bergey@teallabs.org
 
-## [Resume (pdf)](/docs/Daniel-Bergey-resume.pdf)
-
 ## Portfolio
 
 ### PA School District Expenditures - Interactive Web Graphs (2014)
@@ -42,23 +40,23 @@ library for 2D & 3D graphics in
 
 ### Berrybasket - Networked Datalogger (2013)
 
+![photo of purple printed circuit board](images/berrybasket-purple-PCB.jpg)
 Berrybasket measures up to 14 analog voltage sensors, and uploads the
-data to a server, so that it can be viewed in near-realtime.  We wrote
-the software, and designed a circuit board to connect the sensors to a
-small and inexpensive Linux computer.  The project grew out of my
-field monitoring of buildings, where it is inconvenient to frequently
-visit to collect data, but where a system failure between visits can
-result in months of missed data.  We used the board in Philadelphia
-classroom in 2013.
+data to a server, so that it can be viewed in near-realtime.  The
+project grew out of my field monitoring of buildings, where it is
+inconvenient to frequently visit to collect data, but where a system
+failure between visits can result in months of missed data.  We used
+the board in Philadelphia classroom, and presented a poster about it
+at the *Open Hardware Summit* in 2013.
 
 The hardware and software are described on
-[http://bergey.github.io/berrybasket/](http://bergey.github.io/berrybasket/),
+[the project website](http://bergey.github.io/berrybasket/),
 along with links to the source code and PCB design.  I also
-[wrote a bit more about the process here](posts/2014-05-19-my-first-pcb.html)
+[wrote a bit more about the process here](posts/2014-05-19-my-first-pcb.html).
+
+## [Resume (pdf)](/docs/Daniel-Bergey-resume.pdf)
 
 ## Publications
-* Daniel Bergey and Christalee Bieber. “Teaching with Open Boxes: Datalogging in the Classroom, *Open Hardware Summit* (2013). [(project website)](http://bergey.github.io/berrybasket)
-
 * Armin Rudd and Daniel Bergey.  *Ventilation System Effectiveness and Tested Indoor Air Quality Impacts.* Building Science Corporation, 2013.  [pdf](http://www.buildingscience.com/documents/bareports/ba-1309-ventilation-system-effectiveness-and-indoor-air-quality-impacts/)
 
 * A. Rudd, H. Henderson, D. Bergey, D. Shirey. *RP-1449: Energy Efficient and Cost Assessment of Humidity Control Options for Residential Buildings.* ASHRAE, 2012.  [(PDF behind paywall)](http://www.techstreet.com/products/1856921/product_items/4874670href)
