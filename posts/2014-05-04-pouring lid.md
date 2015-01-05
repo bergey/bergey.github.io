@@ -7,4 +7,4 @@ A while back I acquired [a sippy lid for Mason jars](http://www.cuppow.com/) (ak
 
 Among other things, some of my Mason jars are full of vodka infusing plums, clementines, ginger, coffee, et cetera.  Mason jars are convenient for getting the solids into and out of, but they're not so great for pouring a shot or less worth.  I'm pleased to confirm that the Cuppow makes a great pouring lid.
 
-![](https://farm3.staticflickr.com/2940/14104852055_b9cf2b2cd1_z.jpg)
+![](images/pouring-lid.jpg)

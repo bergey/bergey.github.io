@@ -90,24 +90,27 @@ h1 {
    font-weight: normal;
    font-family: Belleza, sans-serif;
    font-size: 24px;
+   clear: both;
 }
 
 h2 {
    color: rgb(20, 140, 140);
    font-weight: normal;
    font-family: Belleza, sans-serif;
-   font-size: 20px;
+    font-size: 20px;
+    clear: both;
 }
 
 h3 {
-   color: #555;
-   font-size: 18px;
+   color: #444;
+   font-size: 14px;
    font-family: Belleza, sans-serif;
-   font-weight: normal;
+    font-weight: normal;
+    clear: both;
 }
 
 div.info {
-   color: #555;
+   color: #444;
    font-size: 14px;
    font-style: italic;
 }
@@ -117,5 +120,7 @@ p {
  }
 
 img {
-   max-width: 100%
+    max-width: 100%;
+    float: left;
+    margin: 1em;
 }
