@@ -13,11 +13,11 @@ The lead screw is jammed in its fixed nut, and the motor is not strong enough to
 
 In the photo below, the router has been removed (mostly because we didn't know what we were doing, but it does make the photo easier to understand).  The adjustment arm is held by one bolt, circled in red.  It's a cap-head which takes an allen wrench.  After removing this bolt, the adjustment arm can be lowered away from the fixed nut, and removed.  Do not unscrew the big screw between the two circles in the photo.
 
-![](http://bergey.s3.amazonaws.com/teallabs/z-axis-closeup.svg)
+![](/images/z-axis-closeup.svg)
 
 With the adjustment arm out of the way, you can press on the nut (circled in white) until it unjams.  It did not take much force when I did it.  Now reattach the adjustment arm, turning the nut so it catches the end of the arm as before.
 
 Here's another picture, with the router installed.  Once again, the bolt to remove is circled in red.
 
-![](http://bergey.s3.amazonaws.com/teallabs/z-with-router.svg)
+![](/images/z-with-router.svg)
 

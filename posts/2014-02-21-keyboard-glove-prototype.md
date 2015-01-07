@@ -25,13 +25,13 @@ Adafruit has their own line, and lots of tutorials.  And sometime in
 the last 5 years, more or less by accident, I've learned enough about
 Arduinos and op-amps and working with conductive thread to try again.
 
-![](https://farm4.staticflickr.com/3788/12365712943_8a23235bd3_z_d.jpg)
+![](/images/2014-02-21-keyboard-glove-and-breadboard.jpg)
 
 So I finally have a wearable keyboard - though right now it only types
 lowercase letters.  The sensor on each finger is made from a piece of
 velostat sandwiched between two pieces of woven conductive fabric.
 
-![](https://farm4.staticflickr.com/3822/12307449233_a6fae87906_z_d.jpg)
+![](/images/2014-02-21-keyboard-glove-thumb-closeup.jpg)
 
 The resistance of the velostat drops with increasing pressure.  I'm
 worried that the resistance of sensors made this way will vary too

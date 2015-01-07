@@ -5,7 +5,7 @@ tags: Daniel, electronics, datavis, open-hardware
 ---
 Today I received my PCBs from [OSHPark](http://oshpark.com/).  This is the first PCB I've ever designed, so I'm pretty excited, simple as it is.  The board is a revised version of our [Berrybasket](https://bergey.github.io/berrybasket/) Raspberry Pi data logging board.  Last year, when we used this logger with 5th and 6th graders, we wired the hardware onto an [Adafruit permaproto](https://www.adafruit.com/products/1135).  The picture below shows the fully stuffed prototype and the new PCB without any components.
 
-![](https://farm6.staticflickr.com/5524/14036525137_132266c468_n_d.jpg)
+![](/images/2014-05-19-berrybasket-prototype-and-purple-pcb.jpg)
 
 The permaproto was a good compromise between mechanical robustness and rapid prototyping, but I wouldn't want to make a bunch that way.  So I wanted to get some proper boards made, but between my inexperience and the lack of outside pressure, I kept putting it off.  More recently, I realized that I'm eventually going to want PCBs for my keyboard glove, and those are going to be middling complicated.  I wanted to try out the process with something simpler, and the Berrybasket design, with just one IC (repeated twice) and some connectors, all through-hole, seemed perfect.
 
