@@ -27,6 +27,33 @@ tendencies in data visualization.  The project is implemented in
 Javascript using [D3](http://d3js.org/), and is available
 [on github](https://github.com/bergey/school-districts).
 
+### Pandoc RST Reader (2014)
+
+I improved [pandoc's](http://pandoc.org) support for
+[RST](http://docutils.sourceforge.net/rst.html), including adding
+support for
+[class directives](https://github.com/jgm/pandoc/pull/1781), warnings
+about unknown syntax, and improved
+[custom roles](https://github.com/jgm/pandoc/pull/1805).  Class
+directives are converted to HTML as a div tag with the specified
+class(es).  Custom roles are similar, for inline elements instead of
+block; in other words, they become span tags in HTML.  I'm mostly
+interested in both features as a way to mark particular document
+elements for special processing by filters (like `diagrams-pandoc`,
+below).  There are more details in the
+[release notes](http://pandoc.org/releases.html#pandoc-1.13.2-20-dec-2014).
+
+### `diagrams-pandoc` - Pandoc Filter for Vector Graphics Language (2014)
+
+I wrote the initial version of
+[diagrams-pandoc](https://github.com/diagrams/diagrams-pandoc), a
+filter to convert Haskell code in markdown or other pandoc-readable
+formats into images in the final output.  `diagrams-pandoc` is now
+collectively maintained by the Diagrams team.  I hope that this filter
+will make it easier for people to include Diagrams in their documents,
+especially when writing for the web, and also encourage more people to
+use Diagrams.
+
 ### Finger-Jointed Box - Laser Cut from Parametric Design in Haskell (2013)
 
 ![photo of plywood box, about 3" long, held in hand](images/lasercut-box.jpg)\
@@ -37,6 +64,11 @@ easily modified to arbitrary box dimensions and joint sizes.  I also
 help maintain the [Diagrams](http://projects.haskell.org/diagrams/)
 library for 2D & 3D graphics in
 [Haskell](https://www.haskell.org/haskellwiki/Haskell).  
+
+### Metafont in Haskell - Spline Interpolation in Diagrams (2013)
+
+
+https://github.com/diagrams/diagrams-contrib/pull/16
 
 ### Berrybasket - Networked Datalogger (2013)
 
