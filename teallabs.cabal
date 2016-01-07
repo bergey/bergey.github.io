@@ -8,7 +8,7 @@ version:             0.1.0.0
 license:             BSD3
 license-file:        LICENSE
 author:              Daniel Bergey
-maintainer:          bergey@alum.mit.edu
+maintainer:          bergey@teallabs.org
 -- copyright:           
 -- category:            
 build-type:          Simple
@@ -20,9 +20,9 @@ executable teallabs
   -- other-modules:       
   other-extensions:    OverloadedStrings
   build-depends:       
-    base >=4.7 && <4.8,
-    hakyll >= 4.5 && < 4.6,
-    semigroups >= 0.10 && < 0.16
+    base >=4.7 && <4.10,
+    hakyll >= 4.5 && < 4.8,
+    semigroups >= 0.10 && < 0.19
                      
   -- hs-source-dirs:      
   default-language:    Haskell2010
