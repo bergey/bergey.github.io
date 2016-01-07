@@ -68,7 +68,7 @@ library for 2D & 3D graphics in
 ### Metafont in Haskell - Spline Interpolation in Diagrams (2013)
 
 
-https://github.com/diagrams/diagrams-contrib/pull/16
+[https://github.com/diagrams/diagrams-contrib/pull/16](https://github.com/diagrams/diagrams-contrib/pull/16)
 
 ### Berrybasket - Networked Datalogger (2013)
 
