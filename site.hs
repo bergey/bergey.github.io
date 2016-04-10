@@ -10,15 +10,7 @@ instance Semigroup (Context a) where
 --------------------------------------------------------------------------------
 main :: IO ()
 main = hakyll $ do
-    match "images/*" $ do
-        route   idRoute
-        compile copyFileCompiler
-
-    match "docs/*" $ do
-        route   idRoute
-        compile copyFileCompiler
-
-    match "slides/*" $ do
+    match ( "images/" .||. "docs/**" .||. "slides/**" ) $ do
         route   idRoute
         compile copyFileCompiler
 
