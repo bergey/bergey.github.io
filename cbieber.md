@@ -2,8 +2,9 @@
 title: Christalee Bieber
 ---
 
-Christalee is on a journey to understand the universe from atoms on up, teaching as she goes. So far she's moved from physics into engineering and design; eventually she would like to learn much more about people and cultures. In her spare time, she enjoys building things out of wood and metal, cooking delicious vegetarian food, and brewing beer; lately she's been conquering her fear of the sewing machine.
+![headshot](/images/cbieber.jpg)
+Christalee is on a mission to understand the universe and its inhabitants, following her interests from physics and materials science to engineering and design. Teaching is one of her favorite ways to cement her knowledge while improving the world. In her spare time, she enjoys building things out of wood and metal, cooking vegetarian food, and brewing beer; lately she's been conquering her fear of the sewing machine. Contact her at christalee@teallabs.org
 
-## Portfolio
+<!-->## Portfolio<-->
 
-## [Resume (pdf)](/docs/cbieber_resume_0817.pdf)
+## [Resume (pdf)](/docs/cbieber_resume_1017.pdf)
