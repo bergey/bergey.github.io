@@ -15,3 +15,5 @@ Surprisingly, my session proposal quickly got traction, mostly due to a catchy t
 I did my best to facilitate the discussion, which did not go in the direction I had in mind when I proposed it. But that's the double-edged nature of unconferences - you never know which perspectives are coming to the table. I enjoyed it, although I wasn't expecting to talk so much - that was a bit stressful. Next time I'll come prepared :) And I would've liked to pop into other sessions that sounded interesting, or at least skim their notes afterwards. The whole event attracted ~50 attendees, many of whom seemed to already know each other, but we all introduced ourselves in chat and we had a channel to swap contact info.
 
 I love observing educators in the student/audience role - do they react the way their students would? What are the goals of the organizers? attendees? How are those goals served by the format of the event? Was the event as-advertised, or did it go another way?
+
+**postscript: unhangout #2 on culturally responsive pedagogy; my interview with the researchers
