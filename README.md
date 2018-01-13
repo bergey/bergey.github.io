@@ -6,10 +6,11 @@ This is a static website compiled with [Hakyll](http://jaspervdj.be/hakyll/).  T
 
 # Usage
 
+```
 > stack build
 > stack exec teallabs -- watch
-> ./site watch
 > ./deploy
+```
 
 # Usage notes
 
