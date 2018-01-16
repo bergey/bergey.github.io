@@ -2,7 +2,7 @@
 title: Christalee Bieber
 ---
 
-##Hi, I'm Christalee! I'm a STEM/maker educator based in Brooklyn, NY, looking for work that takes advantage of my technical fluency, communication skills, and attention to detail (e.g. project manager, QA/testing, technical writer, or junior software dev). I'm also open to hardware prototyping and fabrication work. Find out more below or get in touch at christalee@teallabs.org
+# Welcome! I'm a STEM/maker educator based in Brooklyn, NY, looking for work that takes advantage of my technical fluency, communication skills, and attention to detail (e.g. project manager, QA/testing, technical writer, or junior software dev). I'm also open to hardware prototyping and fabrication work. Find out more below or get in touch at <christalee@teallabs.org>
 
 ## [Resume (pdf)](/docs/cbieber_resume_1017.pdf)
 
