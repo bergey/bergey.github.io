@@ -11,3 +11,4 @@ cabal.sandbox.config
 /images/raw-uncropped/
 .stack-work
 *.DS_Store
+/drafts/
