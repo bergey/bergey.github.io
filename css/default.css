@@ -41,7 +41,7 @@ div.sidebar {
 }
 
 div.content {
-   width: 40em;
+   width: 50em;
    margin: 0px auto;
 }
 
@@ -51,7 +51,7 @@ div.content {
     }
 
 }
-/* below 40em, just use the whole screen */
+/* below 50em, just use the whole screen */
 @media screen and (max-width: 750px) {
    div.sidebar {
       width: 100%;
@@ -63,7 +63,7 @@ div.content {
 
    div.content {
       width: 98%;
-      max-width: 40em;
+      max-width: 50em;
       margin: 0 auto;
    }
 
@@ -103,9 +103,9 @@ h2 {
 
 h3 {
    color: #444;
-   font-size: 14px;
+   font-size: 16px;
    font-family: Belleza, sans-serif;
-    font-weight: normal;
+    font-weight: bold;
     clear: both;
 }
 
@@ -117,6 +117,7 @@ div.info {
 
 p {
    font-family: EB Garamond, serif;
+   font-size: 16px;
  }
 
 img {
