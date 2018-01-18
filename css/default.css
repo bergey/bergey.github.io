@@ -29,7 +29,7 @@ div#logo a {
 
 div.sidebar {
    text-align: left;
-   width:5em;
+   width:7em;
    margin-left: 2em;
    margin-top: 2em;
    position:fixed;
@@ -40,19 +40,24 @@ div.sidebar {
 
 }
 
+div.sidebar ul {
+	list-style: none;
+	padding-left: 0;
+}
+
 div.content {
-   width: 50em;
+   width: 40em;
    margin: 0px auto;
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 975px) {
     div.content {
-       margin: 0em auto 0 12em;
+       margin: 0em auto 0 216px;
     }
 
 }
 /* below 50em, just use the whole screen */
-@media screen and (max-width: 750px) {
+@media screen and (max-width: 800px) {
    div.sidebar {
       width: 100%;
       margin: 0 auto;
@@ -60,10 +65,13 @@ div.content {
       position: static;
       text-align: center;
    }
-
+   div.sidebar li{
+	   display: inline;
+	   margin: 1em;
+   }
    div.content {
       width: 98%;
-      max-width: 50em;
+      max-width: 40em;
       margin: 0 auto;
    }
 

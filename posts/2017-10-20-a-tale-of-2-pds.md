@@ -5,6 +5,7 @@ tags: Christalee, making, programming, education
 ---
 
 Recently I attended two professional development events nominally aimed at "maker educators." They ended up being pretty different experiences, though!
+<!--more-->
 
 One event was held at a university, lead by a faculty member who (with colleagues) has developed well-known tools and pedagogy for the pursuit of creative technology. Like most PD for teachers, it was structured as a lecture with projected visuals and some live-demos. Since only half a dozen were in attendance, we did have some chances to bring our own experiences and questions to the group, but this was insufficient critical mass to really get a discussion going.
 

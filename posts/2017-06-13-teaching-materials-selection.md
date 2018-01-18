@@ -18,7 +18,7 @@ A few months ago, a former colleague lead a project where students designed, pro
 	(cheap, durable, easy to build, easy to fix, fixable without special tools, expandable/upgradable, waterproof, easy to clean, not too heavy, collapsible, creative?)
 
 	Write down these answers and post them on the wall for easy reference. 
-<!-- more -->
+<!--more-->
 4. Grab some boxes and take an hour after school gathering up prototyping materials: plywood, lumber, acrylic sheet, felt/fabric, plastic bottles/containers, metal bars, tile, XPS foam, glass pebbles, PVC pipes, polycarbonate sheet, landscaping/craft foam, aluminum foil, plastic wrap... Also gather scissors, glue guns, box cutters, Gorilla glue, tape, glue sticks, and other tabletop cutting and fastening supplies. Maybe also markers, graph paper, and rulers. Use the boxes to organize everything per classroom and per group. Anything you can’t find or don’t have enough of, put in an order now!
 
 5. For pointers on how to break down the materials selection process, I recommend MIT D-Lab’s excellent [Materials Selection poster](https://d-lab.mit.edu/sites/default/files/D-Lab_Learn-It_Material-selection.pdf). (They also have resources on [Adhesives](https://d-lab.mit.edu/sites/default/files/D-Lab_Learn-It_Adhesives.pdf) and [Fasteners](https://d-lab.mit.edu/sites/default/files/D-Lab_Learn-It_Fasteners_0.pdf).)

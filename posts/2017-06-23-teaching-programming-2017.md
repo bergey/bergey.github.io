@@ -13,7 +13,7 @@ Anyone teaching computer-related topics in 2017 knows that:
 1. The range of skills, compensation levels, and working conditions in "tech" is huge and unpredictable.
 2. Trying to future-proof your students is impossible. 
 
-<!-- more -->
+<!--more-->
 Depending on their college/career goals, you need to strike a balance between exposing them to transferable but abstract concepts vs. fostering mastery of specific tools. Students should leave your program showing mastery in at least one cluster of skills, to build their confidence and ensure that they know how to learn beyond the beginner level.
 
 One challenge is to contextualize and connect different computer-related roles and careers. Ideally students get a taste of multiple fields but end up clear that different job titles/paths go with different daily activities, salaries, business sectors, and educational requirements. An Oracle DBA leads a different life than an iOS designer or an embedded systems engineer. Keeping an eye on the job market is essential input for your curriculum. Internships, field trips, and career talks from working professionals may not be enough to get students to distinguish between career paths. Other career exploration ideas: ask students to review an anonymized resume and suggest what jobs it would and would not be suitable for, with tips for improvement; browse real job ads on Craigslist, Indeed, and LinkedIn, and talk about what differences and similarities they see. The details of this [web developer roadmap](https://github.com/kamranahmedse/developer-roadmap) are overkill, but if you can find or create a simplified version, it could be a good visual aid.
