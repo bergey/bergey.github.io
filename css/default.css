@@ -4,7 +4,7 @@
 body {
    font-family: EB Garamond;
    margin: 0px auto 0px auto;
-   font-size: 14px;
+   font-size: 16px;
 
 }
 
@@ -50,14 +50,14 @@ div.content {
    margin: 0px auto;
 }
 
-@media screen and (max-width: 975px) {
+@media screen and (max-width: 1075px) {
     div.content {
        margin: 0em auto 0 216px;
     }
 
 }
 /* below 50em, just use the whole screen */
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 900px) {
    div.sidebar {
       width: 100%;
       margin: 0 auto;

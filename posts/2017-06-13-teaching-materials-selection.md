@@ -5,6 +5,7 @@ tags: Christalee, materials science, education, design, prototyping
 ---
 
 A few months ago, a former colleague lead a project where students designed, prototyped, and pitched a model of an urban watershed for use as a teaching tool. They had already interviewed local water department staff and watershed educators. Now the instructors contacted me for ideas about supplies and activities for prototyping. Materials selection and Ashby charts are rarely covered in depth for most STEM students or teachers, so I wanted to give them strong guidance. Here's my advice:
+<!--more-->
 
 1. Find a maker or engineer to visit or consult. I put a call out to my network and got a response from an exhibit designer at the city’s science museum.
 
@@ -15,10 +16,11 @@ A few months ago, a former colleague lead a project where students designed, pro
 	Ideally students would come up with these questions, and some of their answers, during the project introduction. One way to get started is to ask students to think about the 5 Ws: Who will use this? When? Where? To do What? Why? 
 
 	Or, have them fill in the blank: This model needs to be ________ 
-	(cheap, durable, easy to build, easy to fix, fixable without special tools, expandable/upgradable, waterproof, easy to clean, not too heavy, collapsible, creative?)
+	
+	(cheap, durable, easy to build, easy to fix, fixable without special tools, expandable/upgradable, waterproof, easy to clean, not too heavy, collapsible, creative)
 
 	Write down these answers and post them on the wall for easy reference. 
-<!--more-->
+
 4. Grab some boxes and take an hour after school gathering up prototyping materials: plywood, lumber, acrylic sheet, felt/fabric, plastic bottles/containers, metal bars, tile, XPS foam, glass pebbles, PVC pipes, polycarbonate sheet, landscaping/craft foam, aluminum foil, plastic wrap... Also gather scissors, glue guns, box cutters, Gorilla glue, tape, glue sticks, and other tabletop cutting and fastening supplies. Maybe also markers, graph paper, and rulers. Use the boxes to organize everything per classroom and per group. Anything you can’t find or don’t have enough of, put in an order now!
 
 5. For pointers on how to break down the materials selection process, I recommend MIT D-Lab’s excellent [Materials Selection poster](https://d-lab.mit.edu/sites/default/files/D-Lab_Learn-It_Material-selection.pdf). (They also have resources on [Adhesives](https://d-lab.mit.edu/sites/default/files/D-Lab_Learn-It_Adhesives.pdf) and [Fasteners](https://d-lab.mit.edu/sites/default/files/D-Lab_Learn-It_Fasteners_0.pdf).)
