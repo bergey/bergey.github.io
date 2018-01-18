@@ -6,7 +6,9 @@ title: Christalee Bieber
 
 ## [Resume (pdf)](/docs/cbieber_resume_1017.pdf)
 
-## [Writing]()
+## [Github](https://github.com/christalee)
+
+## [Writing](/tags/Christalee.html)
 
 ## Portfolio
 

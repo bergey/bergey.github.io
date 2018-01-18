@@ -41,8 +41,8 @@ div.sidebar {
 }
 
 div.sidebar ul {
-	list-style: none;
-	padding-left: 0;
+    list-style: none;
+    padding-left: 0;
 }
 
 div.content {
@@ -66,8 +66,8 @@ div.content {
       text-align: center;
    }
    div.sidebar li{
-	   display: inline;
-	   margin: 1em;
+       display: inline;
+       margin: 1em;
    }
    div.content {
       width: 98%;
