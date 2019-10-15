@@ -23,7 +23,7 @@ main = hakyll $ do
 
     --build up tags
     tags <- buildTags "posts/*" (fromCapture "tags/*.html")
-    
+
     tagsRules tags $ \tag pattern -> do
             let title = "Posts tagged \"" ++ tag ++ "\""
             route idRoute
@@ -37,7 +37,7 @@ main = hakyll $ do
                     >>= loadAndApplyTemplate "templates/tag.html" ctx
                     >>= loadAndApplyTemplate "templates/default.html" ctx
                     >>= relativizeUrls
-    
+
     match "posts/*" $ do
         route $ setExtension "html"
         compile $ pandocCompiler
