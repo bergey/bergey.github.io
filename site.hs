@@ -4,9 +4,6 @@ import Control.Applicative
 import Data.Semigroup
 import           Hakyll
 
-instance Semigroup (Context a) where
-  (<>) = mappend
-
 --------------------------------------------------------------------------------
 main :: IO ()
 main = hakyll $ do
