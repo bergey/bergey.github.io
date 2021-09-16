@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" charset="UTF-8" />
+    <title>Teal Labs - Learning NixOS, Part I</title>
+    <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  </head>
+  <body>
+        <div class="sidebar">
+        <ul>
+            <li><a href="../">Blog</a></li>
+            <li><a href="../bergey.html">Daniel</a></li>
+            <li><a href="../cbieber.html">Christalee</a></li>
+            <li><a href="../archive.html">Archive</a></li>
+        </ul>
+        </div>
+    <div class="content">
+        <h1>Learning NixOS, Part I</h1>
+
+        <div class="info">
+    Posted on April 28, 2014
+    
+        by <a href="../tags/Daniel.html">Daniel</a>
+    
+</div>
+<div class="info">
+    
+    Tags: <a title="All pages tagged 'Daniel'." href="../tags/Daniel.html">Daniel</a>, <a title="All pages tagged 'nixos'." href="../tags/nixos.html">nixos</a>
+    
+</div>
+
+<p>For the last couple of weeks I’ve been using <a href="http://nixos.org/">NixOS</a> as my primary OS. At this point it’s mostly doing what I want, but getting started was a bit rocky. I should really add docs on the wiki to help the next person to come along and try to do similar things, but at the moment I’m not actually sure where the docs need improvement, or that I understand Nix well enough to write correct docs. So this post is partly an attempt to work out what tripped me up, and partly notes to future-me, since usually by the time I understand something, I can’t remember what seemed so difficult about it at first. It’s certainly not meant to be a Nix tutorial.</p>
+<h3 id="too-much-of-a-good-thing">Too much of a good thing</h3>
+<p>Nix offers a bunch of different features:</p>
+<ul>
+<li>tools to manage multiple package versions / environments, much like GNU <code>stow</code> or python’s <code>virtualenv</code></li>
+<li>the option to roll back to a previous version of any environment (until manual garbage collection)</li>
+<li>a guarantee that the package version (hash) depends (transitively) on the versions of all dependencies (aka hermetic builds). This allows reusing a package in multiple environments if and only if all dependencies match.</li>
+<li>tools to build the entire operating system, including config files, from a central config, with all the benefits above</li>
+<li>tools to deploy multiple machines with the same configuration / binaries, or distribute the compilation</li>
+</ul>
+<p>I’d eventually like to use all of these, but I was hoping to learn one at a time. I tried a clean-slate install of NixOS, because the feature I wanted most immediately was the whole-system rollback when upgrading breaks something. In retrospect, I probably would have been less frustrated if I’d first installed <code>nix-env</code>, atop my existing Debian system, and learned the multiple-environments tools. Then I could gradually uninstall the globally-available Debian versions in favor of environment-sandboxed versions managed by <code>nix-env</code>. In the process, I’d get most of the rollback benefits—for userspace applications, which are mostly what break. (Debian already provides rollback for kernels, which occasionally break.)</p>
+<h3 id="xmonad-haskell">xmonad / haskell</h3>
+<p>I immediately ran into trouble trying to install both xmonad (an X11 window manager written in haskell) and a copy of GHC (haskell compiler) set up for coding on <a href="http://projects.haskell.org/diagrams/">Diagrams</a>. XMonad is configured by writing haskell code. To load the configuration, XMonad needs to compile the code. If GHC isn’t on PATH, or if the GHC on PATH doesn’t match the one with which XMonad was compiled, the error messages are remarkably unhelpful. The solution I eventually found was:</p>
+<ul>
+<li>install xmonad globally</li>
+<li>do not install haskell globally</li>
+<li>make a <code>nix-env</code> environment just for recompiling the XMonad config</li>
+<li>make a separate <code>nix-env</code> environment (eventually several) for other haskell projects</li>
+</ul>
+<p>I should probably write this up for the wiki.</p>
+<h3 id="nixpkgs-stability">Nixpkgs stability</h3>
+<p>I also very quickly ran into packages that I wanted to install, that aren’t (yet) part of Nix. Nix packages are plain text files stored in a git(hub) repo, so it looks pretty easy to add packages, install them through the usual machinery, and eventually push them upstream. Again, I ran into trouble because I was installing all my packages globally instead of under <code>nix-env</code> environments.</p>
+<p>I cloned the git repo, added my package derivation (Nix-speak for build instructions), and went to rebuild. I pointed <code>nixos-rebuild</code> at the local checkout. And then I got build failures because TeXLive couldn’t be downloaded—totally unrelated to anything I’d changed.</p>
+<p>I eventually found documentation to the effect that the unstable channel from which <code>nixos-rebuild --upgrade</code> usually pulls it’s packages tracks the git repo, but it isn’t actually git HEAD. Instead, it’s the last version where everything has actually been built successfully on the build farm. Now that I understand it, I like this design.</p>
+<p>So the recommended procedure is to have <code>nixos-rebuild</code> track the channel, and only use local commits atop git HEAD with <code>nix-env</code>. This way I’m only trying to build untested bleeding-edge versions of the dependencies of packages I’m working on.</p>
+<h3 id="working-with-nixpkgs">Working with Nixpkgs</h3>
+<p><code>nix-env</code> and friends create a temporary directory, unpack the source code to be built, fork a new shell (or equivalent), set PATH and other environment variables, and then try to build. By default, they delete the directory and kill the shell, whether the build succeeded or fails. This makes building a new package rather frustrating — I can’t see the generated files, or the working environment, and every command I add to print some information requires a full rebuild. I get enough of this frustration using travis-ci. It’s especially fun when the Makefile downloads some <em>other</em> large package—though poorly behaved upstream Makefiles are obviously no criticism of Nix. Fortunately, <code>nix-env -K</code> instructs the program to keep the temporary directory, and write a file with the environment variables. This is mostly enough to inspect and manually step through the build, although you need to either <code>sudo -i</code> or change the permissions of the tempdir, since normal users don’t have write permissions.</p>
+<p>I still haven’t figured out how to get <code>nix-env</code> to show me packages where any part of the name matches a given string. I resort to grep in the Nixpkgs checkout, but there’s got to be a better way.</p>
+<p><em>2014-05-16 edited to add URLs</em></p>
+
+      </div>
+  </body>
+</html>

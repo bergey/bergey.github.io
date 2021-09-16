@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" charset="UTF-8" />
+    <title>Teal Labs - When the Z Axis Locks Itself</title>
+    <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  </head>
+  <body>
+        <div class="sidebar">
+        <ul>
+            <li><a href="../">Blog</a></li>
+            <li><a href="../bergey.html">Daniel</a></li>
+            <li><a href="../cbieber.html">Christalee</a></li>
+            <li><a href="../archive.html">Archive</a></li>
+        </ul>
+        </div>
+    <div class="content">
+        <h1>When the Z Axis Locks Itself</h1>
+
+        <div class="info">
+    Posted on January 17, 2014
+    
+        by <a href="../tags/Daniel.html">Daniel</a>
+    
+</div>
+<div class="info">
+    
+    Tags: <a title="All pages tagged 'Daniel'." href="../tags/Daniel.html">Daniel</a>, <a title="All pages tagged 'cnc'." href="../tags/cnc.html">cnc</a>, <a title="All pages tagged 'router'." href="../tags/router.html">router</a>, <a title="All pages tagged 'woodworking'." href="../tags/woodworking.html">woodworking</a>, <a title="All pages tagged 'machinery'." href="../tags/machinery.html">machinery</a>
+    
+</div>
+
+<p>Yesterday Christalee and I started cutting some plywood boxes on the Torchmate 2 CNC router in her shop. I raised the Z-axis too far trying to get clearance, and we lost an hour figuring out how to unjam it. We couldn’t find notes on this problem online, so here they are.</p>
+<h3 id="symptoms">Symptoms</h3>
+<p>Traveling upwards, the z-axis stops moving, and instead clicks. This is the sound of the stepper motor slipping. If you try to jog the axis down, the motor makes the same clicking sound, but the axis does not move.</p>
+<h3 id="fixing-it">Fixing It</h3>
+<p>The lead screw is jammed in its fixed nut, and the motor is not strong enough to unjam it. It can be fixed by removing the backlash adjustment arm, pressing on the brass nut, then reinstalling the adjustment arm.</p>
+<p>In the photo below, the router has been removed (mostly because we didn’t know what we were doing, but it does make the photo easier to understand). The adjustment arm is held by one bolt, circled in red. It’s a cap-head which takes an allen wrench. After removing this bolt, the adjustment arm can be lowered away from the fixed nut, and removed. Do not unscrew the big screw between the two circles in the photo.</p>
+<p><img src="../images/z-axis-closeup.svg" /></p>
+<p>With the adjustment arm out of the way, you can press on the nut (circled in white) until it unjams. It did not take much force when I did it. Now reattach the adjustment arm, turning the nut so it catches the end of the arm as before.</p>
+<p>Here’s another picture, with the router installed. Once again, the bolt to remove is circled in red.</p>
+<p><img src="../images/z-with-router.svg" /></p>
+
+      </div>
+  </body>
+</html>

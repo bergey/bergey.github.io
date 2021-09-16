@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" charset="UTF-8" />
+    <title>Teal Labs - Applicatives and Monoids</title>
+    <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  </head>
+  <body>
+        <div class="sidebar">
+        <ul>
+            <li><a href="../">Blog</a></li>
+            <li><a href="../bergey.html">Daniel</a></li>
+            <li><a href="../cbieber.html">Christalee</a></li>
+            <li><a href="../archive.html">Archive</a></li>
+        </ul>
+        </div>
+    <div class="content">
+        <h1>Applicatives and Monoids</h1>
+
+        <div class="info">
+    Posted on October 15, 2019
+    
+        by <a href="../tags/Daniel.html">Daniel</a>
+    
+</div>
+<div class="info">
+    
+    Tags: <a title="All pages tagged 'Daniel'." href="../tags/Daniel.html">Daniel</a>, <a title="All pages tagged 'haskell'." href="../tags/haskell.html">haskell</a>
+    
+</div>
+
+<p>I’m tinkering with bits of a new Haskell Postgres library. It’s very much not ready for others to use, but I’m using an interesting type, new to me, which I want to share. Maybe someone can point me at prior art, also.</p>
+<p>The main idea is that as we build up decoding functions, we want to collect type names at the same time. We’ll use the type names at runtime, to check that Postgres sends what Haskell expects. If not, we’ll use them in an error message.</p>
+<!--more-->
+<p>We want the application programmer to write something like:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">FromSql</span> <span class="dt">MyType</span> <span class="kw">where</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    fromSql <span class="ot">=</span> <span class="dt">MyType</span> <span class="op">&lt;$&gt;</span> <span class="fu">readInt</span> <span class="op">&lt;*&gt;</span> readString</span></code></pre></div>
+<p>Many Haskell SQL libraries provide this Applicative style. (Even if we later automate this boilerplate for most types, the Applicative style is useful for custom decoders.)</p>
+<p>The library should let the application programmer assemble any set of primitive types into any Haskell representation, while ensuring that the type names will match the value decoding functions. (And of course also that the runtime behavior matches the Haskell type.)</p>
+<p>Intuitively, the types Postgres sends should not depend on the specific values. Practically, we want to check the Postgres type names match before decoding any values.</p>
+<p>Monad turns out to be too flexible. If we let applications assemble decoders using monadic bind, we can’t analyze the decoder to pull out the type names soon enough.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> So we want:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Decoder</span> a <span class="ot">=</span> <span class="dt">Decoder</span> [<span class="dt">TypeName</span>] (<span class="dt">IO'</span> a)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">Decoder</span></span></code></pre></div>
+<p>(<code>IO'</code> can make FFI calls to libpq, and carries some state necessary to those calls.)</p>
+<p>This Applicative wasn’t immediately clear to me. The code for <code>&lt;*&gt;</code> was easy, but I didn’t trust my intuition that it is law abiding. So I wrote an informal proof, and then, for good measure, a <a href="https://github.com/bergey/crispy-broccoli/blob/ea8916e7e199b79cb144b92f33434eae851f8909/test/Applicative.v">formal proof</a></p>
+<p>Along the way, I realized that this works for any Monoid where I wrote <code>[TypeName]</code>, and any Applicative where I wrote <code>IO'</code>. The proofs depend on exactly those properties.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Monoidal</span> m f a <span class="ot">=</span> <span class="dt">Monoidal</span> m (f a)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">Monoid</span> m, <span class="dt">Applicative</span> f) <span class="ot">=&gt;</span> <span class="dt">Applicative</span> (<span class="dt">Monoidal</span> m f)</span></code></pre></div>
+<p>I don’t yet know of another useful specialization for particular <code>m</code> and <code>f</code>. If you do, please email me!</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>If we made Decoder a monad, we’d be dealing with functions of type <code>a -&gt; Decoder b</code>. The expected TypeNames now depend on the value of a, not just the type. That means at best we can interleave TypeName checking with decoding. Instead of reporting all errors in a query, we can report only the first.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+      </div>
+  </body>
+</html>

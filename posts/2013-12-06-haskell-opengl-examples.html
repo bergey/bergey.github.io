@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" charset="UTF-8" />
+    <title>Teal Labs - Learning OpenGL in Haskell</title>
+    <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  </head>
+  <body>
+        <div class="sidebar">
+        <ul>
+            <li><a href="../">Blog</a></li>
+            <li><a href="../bergey.html">Daniel</a></li>
+            <li><a href="../cbieber.html">Christalee</a></li>
+            <li><a href="../archive.html">Archive</a></li>
+        </ul>
+        </div>
+    <div class="content">
+        <h1>Learning OpenGL in Haskell</h1>
+
+        <div class="info">
+    Posted on December  6, 2013
+    
+        by <a href="../tags/Daniel.html">Daniel</a>
+    
+</div>
+<div class="info">
+    
+    Tags: <a title="All pages tagged 'Daniel'." href="../tags/Daniel.html">Daniel</a>, <a title="All pages tagged 'haskell'." href="../tags/haskell.html">haskell</a>, <a title="All pages tagged 'opengl'." href="../tags/opengl.html">opengl</a>, <a title="All pages tagged 'diagrams'." href="../tags/diagrams.html">diagrams</a>
+    
+</div>
+
+<p>Earlier this year I decided to learn OpenGL, as part of a project to add 3D capabilities to the Haskell library <a href="http://projects.haskell.org/diagrams/">Diagrams</a>. Never having used OpenGL before, I didn’t know quite what I was getting into. Finding good tutorials for OpenGL in Haskell is a lot harder than it needs to be. The rest of this post is about why that is, and what I mean by <em>good</em> tutorials. Shorter: I’m starting to write the example code I wish I’d had, and <a href="https://github.com/bergey/haskell-OpenGL-examples">posting it on github</a>.</p>
+<p>The problem:</p>
+<ul>
+<li>multiple styles / versions of OpenGL</li>
+<li>multiple C wrappers around OpenGL</li>
+<li>multiple levels of abstraction in the Haskell bindings</li>
+</ul>
+<p>OpenGL has been around <a href="https://en.wikipedia.org/wiki/Opengl#History">forever</a> and it’s changed a lot over the years. Many tutorials, in C and in Haskell, use old deprecated functionality. This works, but it’s not what I want to learn or write, especially in Haskell. The new style is faster, more flexible, and higher level. Haskell does a great job expressing data parallelism, and I’d like that to carry over into how we talk about embarrassingly parallel operations on the GPU.</p>
+<p>Practically, that means passing all the data to OpenGL in arrays of one sort or another, rather than calls to <code>glVertex</code>, <code>glColor</code> and friends. The story about custom shaders versus the fixed-function pipeline isn’t as clear-cut, but I’m assuming it’s worth the modest effort to use them also.</p>
+<p>Did I mention that OpenGL is a low-level hardware interface? In order to display a window, you need some other library, and you need to pick one. The good news is that Haskell has bindings for all the popular C libraries that do this. The bad news is that doesn’t help the choice. Most tutorials still use <a href="http://freeglut.sourceforge.net/">GLUT</a>, I think because it requires a little less code for simple examples. It seems that most folks recommend the <a href="http://hackage.haskell.org/package/GLFW-b">GLFW-b</a> package in Haskell, though. See for instance <a href="http://www.haskell.org/pipermail/haskell-cafe/2013-September/110498.html">this recent post from the author of one of the other packages</a>.</p>
+<p>So much for picking C libraries. But the decisions aren’t over yet! OpenGL is full of void pointers, integers used as pointer offsets, and variable “names” which are actually integers. The <a href="http://hackage.haskell.org/package/OpenGLRaw">OpenGLRaw</a> package brings this API directly into Haskell, <code>Ptr</code>s and all. It’s the most complete option, and it’s pretty easy to follow tutorials written in C/C++, because all of the names are the same.</p>
+<p>The <a href="http://hackage.haskell.org/package/OpenGL">OpenGL</a> package wraps this madness in a thin layer of type safety. It’s still imperative, and we still need lots error-prone boilerplate, but there’s some hope that the type checker will dissuade me from using my fragment shader as a vertex buffer. Most of the OpenGL code that I’ve written so far has been with this package.</p>
+<p>Clearly Haskell can do better. There are a couple of promising libraries from Anthony Cowley that build on <code>OpenGL</code>. <a href="http://hackage.haskell.org/package/GLUtil">GLUtil</a> factors out most of the obvious repetition, so we can mostly forget the details of compiling and linking shaders, or converting vectors to void pointers. <a href="http://hackage.haskell.org/package/vinyl-gl">vinyl-gl</a> (<a href="http://www.arcadianvisions.com/blog/?p=388">tutorial</a>) goes farther, using extensible records to model the input variables to each shader. I’m looking forward to learning these libraries and porting the tutorial code to use them.</p>
+<p>Someday, I hope to be able to write shaders in Haskell using <a href="http://hackage.haskell.org/package/accelerate">accelerate</a>, and tie them in too. But I’m not sure anyone’s actually done that yet.</p>
+
+      </div>
+  </body>
+</html>

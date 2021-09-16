@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" charset="UTF-8" />
+    <title>Teal Labs - Many ways to load modules</title>
+    <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  </head>
+  <body>
+        <div class="sidebar">
+        <ul>
+            <li><a href="../">Blog</a></li>
+            <li><a href="../bergey.html">Daniel</a></li>
+            <li><a href="../cbieber.html">Christalee</a></li>
+            <li><a href="../archive.html">Archive</a></li>
+        </ul>
+        </div>
+    <div class="content">
+        <h1>Many ways to load modules</h1>
+
+        <div class="info">
+    Posted on March  7, 2018
+    
+        by <a href="../tags/Daniel.html">Daniel</a>
+    
+</div>
+<div class="info">
+    
+    Tags: <a title="All pages tagged 'Daniel'." href="../tags/Daniel.html">Daniel</a>, <a title="All pages tagged 'haskell'." href="../tags/haskell.html">haskell</a>
+    
+</div>
+
+<p>I’ve been confused for years by variations of the :load command in GHCi. So much so it often keeps me from using GHCi.</p>
+<p>The <a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/ghci.html">GHC manual</a> mentions:</p>
+<ul>
+<li>:load</li>
+<li>:add</li>
+<li>:reload</li>
+<li>:module</li>
+<li>import</li>
+</ul>
+<p>That’s a lot of different commands!</p>
+<!--more-->
+<p><code>import</code> is pretty much like in normal Haskell files</p>
+<p><code>:module</code> is a lot like import, but also allows removing imports, or replacing the entire set of imports. <code>:module</code> is usually right for modules from upstream packages.</p>
+<p><code>:load</code> is usually right for modules in the current project. Technically it both <em>loads</em> and <em>brings in scope</em>. It loads the named module and all transitive dependencies, at which point it’s possible to bring any of them into scope. It brings in scope the named module (exports or top-level, depending). A simple workflow would use <code>:load</code> whenever working on a local module, and never have more than one in scope. Sufficient for type checking. See below for a more complex workflow.</p>
+<p><code>:add</code> is like <code>:load</code>, but saves time by not re-loading already loaded modules.</p>
+<p><code>:reload</code> is the same as rerunning the last <code>:load</code> (or <code>:add</code>?) command.</p>
+<p><code>:module</code> works both for upstream modules and modules that have been loaded (named or transitively). It changes what is in scope, but doesn’t do any of the much slower steps of loading. So for interactive development / testing, it could make sense to load the project, then switch back &amp; forth with <code>:module</code>.</p>
+<h2 id="conclusions">Conclusions</h2>
+<p>The simple rules I’ve used in the past aren’t actually too bad:</p>
+<ul>
+<li>Use <code>:load</code> (or <code>:l</code>) for modules in the current project</li>
+<li>Use <code>:module</code> or <code>:m</code> for upstream modules</li>
+</ul>
+<p>I may try using <code>:add</code> and <code>:module</code> more to get faster feedback when I already have a good idea which modules are broken. I’m looking forward to using the REPL more now that I understand how to get the same terms in scope as in the file I’m working on.</p>
+
+      </div>
+  </body>
+</html>
