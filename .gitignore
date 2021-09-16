@@ -1,0 +1,14 @@
+*~
+/_cache/
+/site
+/_site
+*.hi
+*.o
+.cabal-sandbox/
+cabal.sandbox.config
+/dist/
+/Setup.hs
+/images/raw-uncropped/
+.stack-work
+*.DS_Store
+drafts/
