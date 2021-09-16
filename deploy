@@ -1,9 +1,21 @@
 #!/bin/sh
 set -x
 git pull
+git reset # make sure we aren't commiting anything else
 git add posts/*
-git commit -am 'automatic commit as part of deploy'
-git push
+if ! git diff --cached --exit-code --quiet
+    then git commit -m 'automatic commit as part of deploy'
+    else echo "no posts to commit"
+fi
 set -e
 stack exec teallabs -- build
-rsync -avz --delete --rsh "ssh -i $HOME/.ssh/id_nearlyfreespeech" _site/ bergey_teallabs@ssh.phx.nearlyfreespeech.net:
+branch=$(git rev-parse --abbrev-ref HEAD)
+git checkout gh_pages
+cp -r _site/* .
+git add .
+if ! git diff --cached --exit-code --quiet
+    then git commit -m "regenerate website"
+    else echo "no _site changes to commit"
+fi
+git push
+git checkout $branch

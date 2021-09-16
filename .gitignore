@@ -1,7 +1,7 @@
 *~
 /_cache/
-/_site/
 /site
+/_site
 *.hi
 *.o
 .cabal-sandbox/
