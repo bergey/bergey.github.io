@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Daniel Bergey" />
+  <title>LED Masks</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="css/reveal.min.css"/>
+    <style type="text/css">code{white-space: pre;}</style>
+    <link rel="stylesheet" href="css/theme/simple.css" id="theme">
+    <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+    <script>
+      if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+          link.href = 'css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+      }
+    </script>
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h2 class="title">LED Masks</h2>
+    <h2 class="author">Daniel Bergey</h2>
+    <h3 class="date">17 July 2015</h3>
+</section>
+
+<section id="agenda-for-today" class="slide level2">
+<h2>Agenda for Today</h2>
+<ul>
+<li>About the Hacktory</li>
+<li>Introduction to Circuits</li>
+<li>Time to Design &amp; Test Circuit</li>
+<li>Introduction to Sewing</li>
+<li>Time to Sew</li>
+<li>DMD Tour</li>
+</ul>
+</section>
+<section id="what-are-e-textiles" class="slide level2">
+<h2>What Are E-Textiles?</h2>
+<p><img src="images/tim-quilt-closeup-small.jpg" alt="Photo &amp; design by Tim Bieniosek" />
+<ul>
+<li>Originally, embedded wires and modified through-hole components</li>
+<li>Today, conductive thread and components designed to be sewable, including Gemma, LilyPad, and Flora</li>
+</ul>
+</p>
+</section><section id="from-basic" class="slide level2">
+<h2>From Basic</h2>
+<p><img src="images/NRB-sewn-circuit-unlit.jpg" alt="photo of a coin-cell battery, a LilyPad LED, and a momentary switch" /> <img src="images/NRB-sewn-circuit-lit.jpg" alt="photo of someone&#39;s finger pressing the switch from the photo above, and the LED lit up" /> Photo and design by NancyLee Bergey</p>
+</section><section id="to-elaborate" class="slide level2">
+<h2>...to Elaborate</h2>
+<figure>
+<img src="images/Becky-Stern-embroidered-Lilypad.png" alt="Photo &amp; design by Becky Stern" /><figcaption>Photo &amp; design by Becky Stern</figcaption>
+</figure>
+</section><section id="today-masks" class="slide level2">
+<h2>Today: Masks</h2>
+<figure>
+    <img src="images/purple-small.jpg" alt="Purple mask example" />
+</figure>
+<p>Designing and sewing a felt mask with blinking lights on it, using conductive thread, sewable battery pack, LEDs and switches, and the Gemma, a pre-programmed microcontroller. (Also beads, sequins, feathers, and whatnot.)</p>
+</section><section id="parts" class="slide level2">
+    <h2>Parts</h2>
+    <p>
+        <img src="images/battery-holder-small.jpg" alt="Battery Holder" />
+        <img src="images/sewable-LED-small.jpg" alt="LED Lights" />
+    </p>
+    <p>
+        <img src="images/adafruit-gemma-small.jpg" alt="Gemma controller" />
+        <img src="images/thread-small.jpg" alt="Conductive (Metallic) Thread" />
+    </p>
+</section><section id="light-up-an-led" class="slide level2">
+    <h2>Light Up an LED</h2>
+    <p>Put two batteries in the batter holder</p>
+    <p>Use one battery holder, one Gemma, one LED, and two alligator clips to light up an LED. What did you learn?</p>
+</section><section id="light-up-an-led-1" class="slide level2">
+<h2>Light Up an LED</h2>
+<p>Use one battery holder, one Gemma, one LED, and two alligator clips to light up an LED. What did you learn?</p>
+<ul>
+<li>Positive on the Gemma to positive on the LED</li>
+<li>Negative on the Gemma to negative on the LED</li>
+<li>Batteries goes into the holder + (smooth) side up near the hinge, the other reversed</li>
+<li>Battery plugs into the Gemma only one way</li>
+<li>The switch on the battery holder needs to be turned on</li>
+</ul>
+</section><section id="whats-going-on-inside-the-circuit" class="slide level2">
+<h2>What’s Going on Inside the Circuit?</h2>
+<p><img src="images/voltage-cropped.png" /></p>
+<p> The battery has two ends, one with high voltage (electric potential) and one with low voltage.</p>
+<p>If we create a path from the V+ side of the battery to the V- side, the current will follow it.</p>
+</section><section id="short-circuits" class="slide level2">
+<h2>Short Circuits</h2>
+<p>Will the LED light up in the circuit below? <img src="images/2014-06-30_Gemma_LED_Short_Circuit.jpg" alt="Alligator clips connecting a Gemma board to a LilyPad LED, and the two contacts of the LED to eachother" /></p>
+</section><section id="short-circuits-1" class="slide level2">
+<h2>Short Circuits</h2>
+<p>Electrons want to take the easiest path. Flowing through conductive thread is easy, but flowing through an LED is harder.</p>
+<p>Electrons will go through an LED if the battery is powerful enough to push them through.</p>
+<p>If you accidentally give the electrons a shortcut around the LED, they won’t go through it! </p>
+<p><img src="images/gemma-led-short-circuit-closeup-small.jpg" alt="Red &amp; Black alligator clips connecting to the positive and negative leads of a LilyPad LED, and another alligator clip connecting positive to negative" /></p>
+</section><section id="the-gemma" class="slide level2">
+<h2>The Gemma</h2>
+<p><img src="images/gemma-led-circuit-small.jpg" alt="LilyPad LED connected to ground and D1 pads of a Gemma board" /></p>
+    <p>Instead of a simple on/off switch, the Gemma gives us more control over our LEDs by changing the voltage flowing to them over time.</p>
+</section><section id="the-gemma-1" class="slide level2">
+<h2>The Gemma</h2>
+<p>Each numbered pad on the Gemma has a different effect:</p>
+<ol start="0" type="1">
+<li>blink (1/2 second off, 1/2 second on)</li>
+<li>fade (0.4 s increasing, 0.4 s decreasing)</li>
+<li>heartbeat (2 blinks every 1.5 seconds)</li>
+</ol>
+<p>You can also program these pads to do other things -- we won't get into this today.</p>
+</section><section id="connecting-more-leds" class="slide level2">
+<h2>Connecting More LEDs</h2>
+<p><img src="images/2014-06-30_Gemma_LED_Parallel_Circuit.jpg" alt="Two LEDs connected in parallel to the ground and D1 pads of a Gemma board" /> To connect more than one LED to each effect, we use a parallel circuit</p>
+</section></section>
+<section><section id="intro-sewing" class="titleslide slide level1"><h2>Intro Sewing</h2></section><section id="starting-stitches" class="slide level2">
+<h2>Starting Stitches</h2>
+<p>
+    <img src="images/knot1-landscape-rescaled.png" alt="1. Make an X near the end." />
+    <img src="images/knot2.png" alt="2. Grip the X with thumb &amp; index" />
+</p><p>
+    <img src="images/knot3.png" alt="3. Roll thread off finger with thumb." />
+    <img src="images/knot4.png" alt="4. Tighten loops into large knot." /></p>
+</section><section id="running-stitch" class="slide level2">
+<h2>Running Stitch</h2>
+<p><img src="images/running.png" alt="Dashed line illustrating running stitch" /> </p>
+<p>The easiest stitch just goes up and down through the fabric, following an imaginary line of dashes. For edges, you can also use a whip stitch, looping the thread around to hold them together.</p>
+</section><section id="conductive sewing">
+    <h2>Sewing with Conductive Thread</h2>
+    <ol>
+        <li>Use a single thickness of thread; tie a knot in the end farthest from the needle.</li>
+        <li>Make 3 loops through the pad of the Gemma or LED you are connecting.</li>
+        <li>Don't cross thread for different connections.  (Unlike the alligator clips, the thread is not insulated.)</li>
+    </ol>
+</section><section id="suggestions-for-success" class="slide level2">
+<h2>Suggestions for Success</h2>
+<ul>
+<li>Check the back for knots and loose threads; these can cause short circuits.</li>
+<li>Needles are sharp, handle with care!</li>
+<li>Leave the battery off until you’re ready to test, to avoid shocks &amp; draining.</li>
+<li>Use alligator clips to test the Gemma patterns before starting to sew.</li>
+<li>If you have to cross conductive thread lines, use fabric as an insulator.</li>
+<li>Use regular thread for ribbon and sequins.</li>
+</ul>
+</section><section id="going-further" class="slide level2">
+<h2>Going Further</h2>
+<ul>
+<li>Gemma is only one of many in the Arduino family -- bigger, smaller, more pins, various add-ons</li>
+<li>Project Night, every week, Thursday, 7pm</li>
+<li>Cool project tutorials at eCrafting.org, learn.adafruit.com, and learn.sparkfun.com</li>
+<li>Purchase sewable electronics from Adafruit or Sparkfun; MicroCenter also has Arduinos</li>
+<li>URLs on the handout</li>
+</ul>
+</section></section>
+    </div>
+  </div>
+
+
+  <script src="lib/js/head.min.js"></script>
+  <script src="js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        theme: 'default', //Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: 'none', //Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+//          { src: 'reveal.js/plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; }, }
+//          { src: 'reveal.js/plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+]});
+    </script>
+    </body>
+</html>
