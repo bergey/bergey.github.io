@@ -1,0 +1,123 @@
+#+OPTIONS: toc:nil reveal_title_slide:nil
+#+REVEAL_ROOT: file://reveal.js
+#+REVEAL_INIT_OPTIONS: transition: 'none'
+* problem
+1. software should work offline
+  - I ride the subway
+  - far enough outside the city that I'm off-grid
+2. georeplication
+  - keep the application running even when AWS US East goes down for 6 hours
+  - use the DC closest to the client, but now you have concurrent-write issues
+* solution
+1. local edits, eventual consistency
+   - naïve: arbitrary write wins
+   - can approach, but not achieve, LWW
+2. do better: don't throw out edits
+   - intuitively, most edits don't conflict – different fields, disjoint text areas
+   - CRDTs are data structures with familiar operations that also have a robust procedure for merging changes
+* examples
+** Key-Value Map
+- Insert Key Value
+- Delete Key
+- Update Key Op (depending on type of existing Value)
+- For concurrent operations, we choose that Insert wins:
+  + Insert k v ‖ Delete k = Delete k ‖ Insert k v = Insert k v
+** Text (RGA: Replicated Growable Array)
+- Insert Id Char
+- Delete Id
+- Update Id Char
+- high level interface in terms of array indices, but we store and transmit unique IDs; indices won't work
+* demo
+https://github.com/bergey/tack
+1. two browsers, one mocking a phone
+2. show changes syncing
+3. kill server
+4. make changes on both sides, to separate tasks & title of same task
+5. restart server
+6. show changes syncing
+** behind the scenes
+- Automerge on client and server (all running on my laptop today)
+- websocket between client & server
+- still on Automerge 1, because I'm having trouble loading wasm
+- PWA: Service Worker caches all the JS, so subsequent visits work even if the server is unreachable
+- Indexed DB: whole project is stored locally
+* more math
+** don't roll your own +crypto+ CRDT
+before CRDTs, lots of failed attempts to write applications that would sync changes and reach a consistent state.  Harder than it looks.
+- use an existing design
+- maybe even an existing implementation.
+- Automerge: library by Kleppman &al
+  + Map
+  + Text
+  + List
+  + Counter
+** concurrent operations commute
+If you do want to design a new CRDT, or just want to understand how they work:
+- ∀ s : State, f, g : Operation. f (g s) = g (f s).
+- ∀ f, g : Operation. f · g = g · f.
+- concurrent: happened on different machines, between syncs
+- We also want to insist that operations which did have an unambiguous chronological order are applied in that order.
+  1. two operations on the same replica always have a clear order
+  2. an operation on replica A occurs after all operations that A has heard of
+*** counter
+- operations are +1 and - 1
+- we already know that addition commutes
+- we can generalize to +n (integer n)
+*** counter: counter-examples 
+With these requirements, we can also see why some data structures won't work.
+  - assume MAX=100, 2 replicas agree that n=99
+  - A does +1, B does +1; these are both valid
+  - when they sync, what happens?
+    1. n=101 violates the max constraint
+    2. discarding the second increment violates commutivity – replicas may disagree on final value
+    3. can maintain hidden internal value, display min(100, n) but it will take multiple -1 operations to reach 99
+*** Map: non-conflicting operations
+- k1 ≠ k2 ⇒ Insert k1 v1; Insert k2 v2
+  + = Insert k2 v2; Insert k1 v1 = Insert k1 v1 ‖ Insert k2 v2
+- k1 ≠ k2 ⇒ Delete k1; Delete k2 = Delete k2; Delete k1
+- similarly for update, mixtures of different operations at different keys
+- Delete k; Delete k = Delete k
+*** Map: resolving conflicts
+- Insert k v ‖ Delete k v can be consistent either way
+  + Insert-wins is generally preferred
+- Insert k v1 ‖ Insert k v2
+  + merge: Insert k (v1 ‖ v2)
+  + MVR: Insert k [v1, v2]
+  + AWW: pick a more-or-less arbitrary total order on values: Insert k (max v1 v2)
+** causal delivery
+- Concurrent operations commute, but operations with a known order should be applied everywhere in that order
+- this part of the CRDT implementation can be shared by all data structures
+- if replicas can receive messages out of order, they may need to store some without applying them
+*** causal delivery: Automerge
+Automerge's causal delivery resembles git:
+- each change has a content-hash that serves as its ID
+- each change also records its parents
+- replicas exchange messages about which changes they have
+- this also lets Automerge support atomic transactions – multiple CRDT operations that are sent & applied together
+- Bloom filter is out of scope of this talk
+* shortcomings, future work
+- I don't know of any commercial software using CRDTs yet (nor any widely used free software) (except MVR & AWW)
+- benchmarks look good, but I don't know of anyone using CRDTs at scale, either
+** can't always maintain application invariants
+- can't impose a maximum value on a counter (nor minimum if you allow decrements)
+- Want a tree, but concurrent edits can lead to other graphs
+- any change involving multiple fields is suspect, especially if concurrent edits can touch overlapping but not identical regions
+
+  How will we handle these in practice?
+  - Discard some updates even though the underlying CRDT could merge them?
+  - Build a UI that can't show all values from the data model?
+  - or expose the surprising state, even if there's no way to create it with only local edits?
+** authorization, trust
+This demo app has no authentication.  In real software, I expect multiple users want to collaborate, and I don't trust messages coming from clients.
+- need to validate changes proposed during sync against application rules, not only CRDT structure
+- client probably needs some way to roll back rejected changes
+- what if a user's permission on a given document is revoked concurrently with their edits?
+  + Probably reject if the server hears about the permissions change first.
+- I'm still looking for any explanation of how others have handled these issues.
+** active research
+- garbage collection requires coordination, knowing all replicas, or heuristics around max time offline
+- moving a range of list elements to another part of the list / text document
+* further reading
+- Shapiro, Marc, Nuno Preguiça, Carlos Baquero, and Marek Zawirski. “A Comprehensive Study of Convergent and Commutative Replicated Data Types.” INRIA, 2011
+- Kleppmann, Martin, and Alastair R. Beresford. “A Conflict-Free Replicated JSON Datatype.” 2017
+- Gomes, Victor B. F., Martin Kleppmann, Dominic P. Mulligan, and Alastair R. Beresford. “Verifying Strong Eventual Consistency in Distributed Systems.” 2017
