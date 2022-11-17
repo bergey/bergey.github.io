@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title></title>
+<meta name="author" content="Daniel Bergey"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="reveal.js/css/reveal.css"/>
+
+<link rel="stylesheet" href="reveal.js/css/theme/moon.css" id="theme"/>
+
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'reveal.js/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section>
+<section id="slide-org32f0d42">
+<h2 id="org32f0d42"><span class="section-number-2">1.</span> problem</h2>
+<ol>
+<li>software should work offline
+<ul>
+<li>I ride the subway</li>
+<li>far enough outside the city that I'm off-grid</li>
+
+</ul></li>
+<li>georeplication
+<ul>
+<li>keep the application running even when AWS US East goes down for 6 hours</li>
+<li>use the DC closest to the client, but now you have concurrent-write issues</li>
+
+</ul></li>
+
+</ol>
+</section>
+</section>
+<section>
+<section id="slide-orga12fc44">
+<h2 id="orga12fc44"><span class="section-number-2">2.</span> solution</h2>
+<ol>
+<li>local edits, eventual consistency
+<ul>
+<li>naïve: arbitrary write wins</li>
+<li>can approach, but not achieve, LWW</li>
+
+</ul></li>
+<li>do better: don't throw out edits
+<ul>
+<li>intuitively, most edits don't conflict – different fields, disjoint text areas</li>
+<li>CRDTs are data structures with familiar operations that also have a robust procedure for merging changes</li>
+
+</ul></li>
+
+</ol>
+</section>
+</section>
+<section>
+<section id="slide-org29549e1">
+<h2 id="org29549e1"><span class="section-number-2">3.</span> examples</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+</section>
+<section id="slide-org328595d">
+<h3 id="org328595d"><span class="section-number-3">3.1.</span> Key-Value Map</h3>
+<ul>
+<li>Insert Key Value</li>
+<li>Delete Key</li>
+<li>Update Key Op (depending on type of existing Value)</li>
+<li>For concurrent operations, we choose that Insert wins:
+<ul>
+<li>Insert k v ‖ Delete k = Delete k ‖ Insert k v = Insert k v</li>
+
+</ul></li>
+
+</ul>
+</section>
+<section id="slide-org1981827">
+<h3 id="org1981827"><span class="section-number-3">3.2.</span> Text (RGA: Replicated Growable Array)</h3>
+<ul>
+<li>Insert Id Char</li>
+<li>Delete Id</li>
+<li>Update Id Char</li>
+<li>high level interface in terms of array indices, but we store and transmit unique IDs; indices won't work</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-orgb213cdd">
+<h2 id="orgb213cdd"><span class="section-number-2">4.</span> demo</h2>
+<p>
+<a href="https://github.com/bergey/tack">https://github.com/bergey/tack</a>
+</p>
+<ol>
+<li>two browsers, one mocking a phone</li>
+<li>show changes syncing</li>
+<li>kill server</li>
+<li>make changes on both sides, to separate tasks &amp; title of same task</li>
+<li>restart server</li>
+<li>show changes syncing</li>
+
+</ol>
+</section>
+<section id="slide-orgee08590">
+<h3 id="orgee08590"><span class="section-number-3">4.1.</span> behind the scenes</h3>
+<ul>
+<li>Automerge on client and server (all running on my laptop today)</li>
+<li>websocket between client &amp; server</li>
+<li>still on Automerge 1, because I'm having trouble loading wasm</li>
+<li>PWA: Service Worker caches all the JS, so subsequent visits work even if the server is unreachable</li>
+<li>Indexed DB: whole project is stored locally</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-org94b83f9">
+<h2 id="org94b83f9"><span class="section-number-2">5.</span> more math</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+</section>
+<section id="slide-org1f76e99">
+<h3 id="org1f76e99"><span class="section-number-3">5.1.</span> don't roll your own <del>crypto</del> CRDT</h3>
+<p>
+before CRDTs, lots of failed attempts to write applications that would sync changes and reach a consistent state.  Harder than it looks.
+</p>
+<ul>
+<li>use an existing design</li>
+<li>maybe even an existing implementation.</li>
+<li>Automerge: library by Kleppman &amp;al
+<ul>
+<li>Map</li>
+<li>Text</li>
+<li>List</li>
+<li>Counter</li>
+
+</ul></li>
+
+</ul>
+</section>
+<section id="slide-org7cb0c07">
+<h3 id="org7cb0c07"><span class="section-number-3">5.2.</span> concurrent operations commute</h3>
+<p>
+If you do want to design a new CRDT, or just want to understand how they work:
+</p>
+<ul>
+<li>∀ s : State, f, g : Operation. f (g s) = g (f s).</li>
+<li>∀ f, g : Operation. f · g = g · f.</li>
+<li>concurrent: happened on different machines, between syncs</li>
+<li>We also want to insist that operations which did have an unambiguous chronological order are applied in that order.
+<ol>
+<li>two operations on the same replica always have a clear order</li>
+<li>an operation on replica A occurs after all operations that A has heard of</li>
+
+</ol></li>
+
+</ul>
+</section>
+<section id="slide-orge26befb">
+<h4 id="orge26befb"><span class="section-number-4">5.2.1.</span> counter</h4>
+<ul>
+<li>operations are +1 and - 1</li>
+<li>we already know that addition commutes</li>
+<li>we can generalize to +n (integer n)</li>
+
+</ul>
+</section>
+<section id="slide-org9358b79">
+<h4 id="org9358b79"><span class="section-number-4">5.2.2.</span> counter: counter-examples</h4>
+<p>
+With these requirements, we can also see why some data structures won't work.
+</p>
+<ul>
+<li>assume MAX=100, 2 replicas agree that n=99</li>
+<li>A does +1, B does +1; these are both valid</li>
+<li>when they sync, what happens?
+<ol>
+<li>n=101 violates the max constraint</li>
+<li>discarding the second increment violates commutivity – replicas may disagree on final value</li>
+<li>can maintain hidden internal value, display min(100, n) but it will take multiple -1 operations to reach 99</li>
+
+</ol></li>
+
+</ul>
+</section>
+<section id="slide-org3f05162">
+<h4 id="org3f05162"><span class="section-number-4">5.2.3.</span> Map: non-conflicting operations</h4>
+<ul>
+<li>k1 ≠ k2 ⇒ Insert k1 v1; Insert k2 v2
+<ul>
+<li>= Insert k2 v2; Insert k1 v1 = Insert k1 v1 ‖ Insert k2 v2</li>
+
+</ul></li>
+<li>k1 ≠ k2 ⇒ Delete k1; Delete k2 = Delete k2; Delete k1</li>
+<li>similarly for update, mixtures of different operations at different keys</li>
+<li>Delete k; Delete k = Delete k</li>
+
+</ul>
+</section>
+<section id="slide-orgc7cc540">
+<h4 id="orgc7cc540"><span class="section-number-4">5.2.4.</span> Map: resolving conflicts</h4>
+<ul>
+<li>Insert k v ‖ Delete k v can be consistent either way
+<ul>
+<li>Insert-wins is generally preferred</li>
+
+</ul></li>
+<li>Insert k v1 ‖ Insert k v2
+<ul>
+<li>merge: Insert k (v1 ‖ v2)</li>
+<li>MVR: Insert k [v1, v2]</li>
+<li>AWW: pick a more-or-less arbitrary total order on values: Insert k (max v1 v2)</li>
+
+</ul></li>
+
+</ul>
+</section>
+<section id="slide-org36d2695">
+<h3 id="org36d2695"><span class="section-number-3">5.3.</span> causal delivery</h3>
+<ul>
+<li>Concurrent operations commute, but operations with a known order should be applied everywhere in that order</li>
+<li>this part of the CRDT implementation can be shared by all data structures</li>
+<li>if replicas can receive messages out of order, they may need to store some without applying them</li>
+
+</ul>
+</section>
+<section id="slide-orgf5861ed">
+<h4 id="orgf5861ed"><span class="section-number-4">5.3.1.</span> causal delivery: Automerge</h4>
+<p>
+Automerge's causal delivery resembles git:
+</p>
+<ul>
+<li>each change has a content-hash that serves as its ID</li>
+<li>each change also records its parents</li>
+<li>replicas exchange messages about which changes they have</li>
+<li>this also lets Automerge support atomic transactions – multiple CRDT operations that are sent &amp; applied together</li>
+<li>Bloom filter is out of scope of this talk</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-org68cb74b">
+<h2 id="org68cb74b"><span class="section-number-2">6.</span> shortcomings, future work</h2>
+<ul>
+<li>I don't know of any commercial software using CRDTs yet (nor any widely used free software) (except MVR &amp; AWW)</li>
+<li>benchmarks look good, but I don't know of anyone using CRDTs at scale, either</li>
+
+</ul>
+</section>
+<section id="slide-orga0ab136">
+<h3 id="orga0ab136"><span class="section-number-3">6.1.</span> can't always maintain application invariants</h3>
+<ul>
+<li>can't impose a maximum value on a counter (nor minimum if you allow decrements)</li>
+<li>Want a tree, but concurrent edits can lead to other graphs</li>
+<li><p>
+any change involving multiple fields is suspect, especially if concurrent edits can touch overlapping but not identical regions
+</p>
+
+<p>
+How will we handle these in practice?
+</p>
+<ul>
+<li>Discard some updates even though the underlying CRDT could merge them?</li>
+<li>Build a UI that can't show all values from the data model?</li>
+<li>or expose the surprising state, even if there's no way to create it with only local edits?</li>
+
+</ul></li>
+
+</ul>
+</section>
+<section id="slide-orga33d0f7">
+<h3 id="orga33d0f7"><span class="section-number-3">6.2.</span> authorization, trust</h3>
+<p>
+This demo app has no authentication.  In real software, I expect multiple users want to collaborate, and I don't trust messages coming from clients.
+</p>
+<ul>
+<li>need to validate changes proposed during sync against application rules, not only CRDT structure</li>
+<li>client probably needs some way to roll back rejected changes</li>
+<li>what if a user's permission on a given document is revoked concurrently with their edits?
+<ul>
+<li>Probably reject if the server hears about the permissions change first.</li>
+
+</ul></li>
+<li>I'm still looking for any explanation of how others have handled these issues.</li>
+
+</ul>
+</section>
+<section id="slide-org65f4b85">
+<h3 id="org65f4b85"><span class="section-number-3">6.3.</span> active research</h3>
+<ul>
+<li>garbage collection requires coordination, knowing all replicas, or heuristics around max time offline</li>
+<li>moving a range of list elements to another part of the list / text document</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-org65b63b5">
+<h2 id="org65b63b5"><span class="section-number-2">7.</span> further reading</h2>
+<ul>
+<li>Shapiro, Marc, Nuno Preguiça, Carlos Baquero, and Marek Zawirski. “A Comprehensive Study of Convergent and Commutative Replicated Data Types.” INRIA, 2011</li>
+<li>Kleppmann, Martin, and Alastair R. Beresford. “A Conflict-Free Replicated JSON Datatype.” 2017</li>
+<li>Gomes, Victor B. F., Martin Kleppmann, Dominic P. Mulligan, and Alastair R. Beresford. “Verifying Strong Eventual Consistency in Distributed Systems.” 2017</li>
+
+</ul>
+</section>
+</section>
+</div>
+</div>
+<script src="reveal.js/js/reveal.js"></script>
+<script src="reveal.js/lib/js/head.min.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+transition: 'none',
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: 'reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+
+});
+
+</script>
+</body>
+</html>
