@@ -18,7 +18,23 @@
     <div class="content">
         <h1>Blog</h1>
 
-        <a href="./posts/2019-10-15-postgres-applicative.html"><h2>Applicatives and Monoids</h2></a>
+        <a href="./posts/2023-02-11-rust-webassembly.html"><h2>Rust & WebAssembly</h2></a>
+<div class="info">
+    Posted on February 11, 2023
+    
+        by <a href="./tags/Daniel.html">Daniel</a>
+    
+</div>
+
+  <p><p>tldr; The future of Rust webapps is bright; the present is rocky.</p>
+<p>My latest side project uses CRDTs to merge changes from multiple clients, while also allowing offline edits &amp; immediate local feedback. The <a href="https://crates.io/crates/automerge">Automerge CRDT library</a> is written in Rust, so I have been learning the ins &amp; outs of working with WebAssembly in the browser.</p>
+<h1 id="bundlers">Bundlers</h1>
+<p>I’m told that Webpack can be configured to import webassembly files, or JS files that transitively import webassembly, with the same syntax as normal ES6 imports. Unfortunately, I still don’t have the patience to learn to configure Webpack, and I will go to great lengths to avoid it. For <a href="https://github.com/bergey/tack">last year’s CRDT project</a> that meant using <a href="https://parceljs.org/docs/">Parcel</a>, which worked great until I tried to import WebAssembly. Alas, Parcel <a href="https://github.com/parcel-bundler/parcel/issues/1325">does not support wasm today</a> (Parcel v1 apparently did, and Automerge v0.1 was pure JS, which is how <code>tack</code> works, but for today I want to use the actively developed versions.)</p>
+<p>So I’ve been trying something more quixotic – writing my entire client side in Rust, aside from the loading function below. <code>init</code> takes care of fetching &amp; loading the wasm file. I pass the URL of the server in from JS so that I don’t need to recompile the Rust code when deploying.</p>
+</p>
+  <a href="./posts/2023-02-11-rust-webassembly.html">Read more</a>
+
+<a href="./posts/2019-10-15-postgres-applicative.html"><h2>Applicatives and Monoids</h2></a>
 <div class="info">
     Posted on October 15, 2019
     
@@ -51,17 +67,6 @@
 <p>That’s a lot of different commands!</p>
 </p>
   <a href="./posts/2018-03-07-ghci-loading-modules.html">Read more</a>
-
-<a href="./posts/2017-10-20-a-tale-of-2-pds.html"><h2>A Tale of 2 PDs</h2></a>
-<div class="info">
-    Posted on October 20, 2017
-    
-        by <a href="./tags/Christalee.html">Christalee</a>
-    
-</div>
-
-  <p><p>Recently I attended two professional development events nominally aimed at “maker educators.” They ended up being pretty different experiences, though! </p>
-  <a href="./posts/2017-10-20-a-tale-of-2-pds.html">Read more</a>
 
 
 

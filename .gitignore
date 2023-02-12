@@ -13,3 +13,5 @@ stack.yaml.lock
 .stack-work
 *.DS_Store
 drafts/
+/dist-newstyle/
+/trunk/

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" charset="UTF-8" />
+    <title>Teal Labs - Rust & WebAssembly</title>
+    <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  </head>
+  <body>
+        <div class="sidebar">
+        <ul>
+            <li><a href="../">Blog</a></li>
+            <li><a href="../bergey.html">Daniel</a></li>
+            <li><a href="https://christalee.teallabs.org">Christalee</a></li>
+            <li><a href="../archive.html">Archive</a></li>
+        </ul>
+        </div>
+    <div class="content">
+        <h1>Rust & WebAssembly</h1>
+
+        <div class="info">
+    Posted on February 11, 2023
+    
+        by <a href="../tags/Daniel.html">Daniel</a>
+    
+</div>
+<div class="info">
+    
+    Tags: <a href="../tags/Daniel.html">Daniel</a>, <a href="../tags/Rust.html">Rust</a>, <a href="../tags/webapps.html">webapps</a>
+    
+</div>
+
+<p>tldr; The future of Rust webapps is bright; the present is rocky.</p>
+<p>My latest side project uses CRDTs to merge changes from multiple clients, while also allowing offline edits &amp; immediate local feedback. The <a href="https://crates.io/crates/automerge">Automerge CRDT library</a> is written in Rust, so I have been learning the ins &amp; outs of working with WebAssembly in the browser.</p>
+<h1 id="bundlers">Bundlers</h1>
+<p>I’m told that Webpack can be configured to import webassembly files, or JS files that transitively import webassembly, with the same syntax as normal ES6 imports. Unfortunately, I still don’t have the patience to learn to configure Webpack, and I will go to great lengths to avoid it. For <a href="https://github.com/bergey/tack">last year’s CRDT project</a> that meant using <a href="https://parceljs.org/docs/">Parcel</a>, which worked great until I tried to import WebAssembly. Alas, Parcel <a href="https://github.com/parcel-bundler/parcel/issues/1325">does not support wasm today</a> (Parcel v1 apparently did, and Automerge v0.1 was pure JS, which is how <code>tack</code> works, but for today I want to use the actively developed versions.)</p>
+<p>So I’ve been trying something more quixotic – writing my entire client side in Rust, aside from the loading function below. <code>init</code> takes care of fetching &amp; loading the wasm file. I pass the URL of the server in from JS so that I don’t need to recompile the Rust code when deploying.</p>
+<!--more-->
+<div class="sourceCode" id="cb1"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> init<span class="op">,</span> <span class="op">{</span> start <span class="op">}</span> <span class="im">from</span> <span class="st">&quot;./build/draft.js&quot;</span><span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a>(<span class="kw">async</span> <span class="kw">function</span> () <span class="op">{</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>  <span class="cf">await</span> <span class="at">init</span>()<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>  <span class="at">start</span>(<span class="st">&quot;ws://localhost:3003/ws&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="op">}</span>)()</span></code></pre></div>
+<p>I build the application with <code>wasm-pack build --target web</code> which outputs both the wasm file &amp; a JS file that loads it. No bundler required! A little care is required to preserve the relative path between the two files when deploying.</p>
+<p>Eventually, I will probably want some of the other things that bundlers do, besides bundling – minifying, CSS processing, renaming files with a hash of their contents &amp; renaming all references, so I can set longer <code>Cache-Control: max-age</code>, putting all the asset names into a PWA manifest. I have some untested ideas of how to do this with Parcel, without requiring it to understand the WebAssembly load dance. For now, I can recomend <code>--target web</code> as a way to get started, deferring bundler config until there’s a program worth bundling.</p>
+<h1 id="passing-values-between-rust-js">passing values between Rust &amp; JS</h1>
+<p>My understanding is that nothing interesting can be round-tripped between Rust &amp; JS. Or rather, Rust &amp; <code>bindgen</code> are justifiably untrusting, requiring that every value passed to JS has a lifetime bounded by <code>static</code> (in other words, that JS is free to hold on to it indefinitely), and treating every value incoming from JS as a <code>JsVal</code> which could be anything. Passing references without copying out the whole referenced value gets even hairier.</p>
+<p>I’ve been handling this by not passing anything to JS if I can possibly help it. Rust functions which take no arguments, or only primitive values like numbers or strings, are fine. These can be easily exported and called from JS. Closures that own all their data are mostly fine – quite wordy to set up, but they can be passed to <code>add_event_listener</code> and all is well. I wrote a helper for half the wordiness:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">pub</span> <span class="kw">fn</span> add_listener&lt;El, Ev&gt;(element: &amp;El, event_name: &amp;<span class="dt">str</span>, callback: &amp;Closure&lt;dyn <span class="bu">FnMut</span>(Ev)&gt;)</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">where</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>    El: <span class="bu">AsRef</span>&lt;EventTarget&gt;,</span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="op">{</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>    <span class="bu">AsRef</span>::&lt;EventTarget&gt;::as_ref(element)</span>
+<span id="cb2-6"><a href="#cb2-6"></a>        .add_event_listener_with_callback(event_name, callback.as_ref().unchecked_ref())</span>
+<span id="cb2-7"><a href="#cb2-7"></a>        .unwrap();</span>
+<span id="cb2-8"><a href="#cb2-8"></a>    <span class="co">// Can't callback.forget() here, because we can't express the WasmClosure constraint</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="op">}</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a></span>
+<span id="cb2-11"><a href="#cb2-11"></a></span>
+<span id="cb2-12"><a href="#cb2-12"></a><span class="co">// use like:</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a><span class="kw">let</span> handler = handle_keypress(&amp;client);</span>
+<span id="cb2-14"><a href="#cb2-14"></a>add_listener(&amp;document(), <span class="st">&quot;keyup&quot;</span>, &amp;handler);</span>
+<span id="cb2-15"><a href="#cb2-15"></a>handler.forget();</span></code></pre></div>
+<p>This all works because my event handlers live for the life of the program, by design. It would be much worse in a program written in the React style, that dynamically creates DOM elements with event handlers. In that case, I would probably need the <a href="https://rustwasm.github.io/wasm-bindgen/reference/weak-references.html">–weak-refs option to wasm-bindgen</a> at least.</p>
+<h1 id="global-variables">global variables</h1>
+<p>Like most programs, mine has a global application state. That is to say, it <strong>should</strong> be unambiguous at any point what the current drawing is, what we need to render, whether or not we have a connection to the server, and so forth. Up until a couple of weeks ago, I was using <code>lazy_static</code> to put this global state in a global <strong>variable</strong>, or rather, a handful of variables.</p>
+<p>In some ways, this worked great. Rendering functions could read what they needed, input callbacks could update the fields that they needed. These functions lived in files near the types they dealt with. Best of all, input calbacks were top-level functions with no arguments, so they could be exported &amp; called from JS. It was convenient to bind the callbacks to their targets in JS (after the <code>init()</code> call to WebAssembly), with much less ceremony than shown above.</p>
+<p>Then I added a few more fields to the global state, and everything broke down. <code>lazy_static</code> wants global varibles to be thread-safe. I’m only using one thread (WebAssembly threads are too bleeding-edge even for me), but type checking is mostly local, and that’s a global property. For reasons that are not entirely clear to me, <code>JsVal</code> itself is not <code>Send</code>, and many types representing browser objects store a raw <code>JsVal</code>. Closures &amp; Websockets in particular gave me trouble.</p>
+<p>So now all my state is wrapped in an <code>Arc&lt;Mutex&lt;_&gt;&gt;</code>, and my entrypoint does a great deal of knot-tying to ensure that each callback has a reference, including at least one reference that ends up referenced from the state struct itself. Several methods needed to move up to the global state module, or out of <code>impl</code> blocks into functions that take <code>Arc&lt;Mutex&lt;_&gt;&gt;</code> so that they can schedule future work, without holding the lock. I find it harder to understand, but the type checker can now confirm my claim that I only use one thread, so the lack of <code>Send</code> is not a problem.</p>
+<p>These callbacks that hold a shared reference can’t be exported to JS directly. There are workarounds, but this was the point where I gave up, and started binding all my event handlers in Rust, boilerplatey as it is.</p>
+
+      </div>
+  </body>
+</html>
