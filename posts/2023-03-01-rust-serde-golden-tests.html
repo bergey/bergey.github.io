@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" charset="UTF-8" />
+    <title>Teal Labs - golden tests for (de)serialization</title>
+    <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  </head>
+  <body>
+        <div class="sidebar">
+        <ul>
+            <li><a href="../">Blog</a></li>
+            <li><a href="../bergey.html">Daniel</a></li>
+            <li><a href="https://christalee.teallabs.org">Christalee</a></li>
+            <li><a href="../archive.html">Archive</a></li>
+        </ul>
+        </div>
+    <div class="content">
+        <h1>golden tests for (de)serialization</h1>
+
+        <div class="info">
+    Posted on March  1, 2023
+    
+        by <a href="../tags/Daniel.html">Daniel</a>
+    
+</div>
+<div class="info">
+    
+    Tags: <a href="../tags/Daniel.html">Daniel</a>, <a href="../tags/rust.html">rust</a>, <a href="../tags/testing.html">testing</a>, <a href="../tags/macros.html">macros</a>
+    
+</div>
+
+<p>While defining the interface between my client &amp; server for my <a href="https://draft.teallabs.org">CRDT CAD project</a>, I wanted to generate a whole bunch of tests, with matching serialization &amp; deserialization tests for each example. In other languages I’ve written loops that call the <code>testCase</code> function, whatever it is called, but the macro approach of rust’s built in testing makes that harder. I needed an excuse to learn Rust macros, though. I want to share the result, which isn’t long enough or general enough for a library, so blog post it is!</p>
+<p>I’m specifically concerned with testing that, when I add more constructors to this <code>Message</code> type, the representation of existing types does not change. (Yes, at some point I will consider flatbuffers &amp;c.) So I want to write out the current representation, commit that, and run future tests against it. For each example, there are three tests, one that writes the golden file, one that tests serialization, and one that deserializes the file contents. <code>cargo test</code> runs only the second two, while <code>cargo test -- --ignored</code> runs only the save variants.</p>
+<p>The details of my message type aren’t important, but it helps to know that <code>draft_shared</code> exports the type <code>Message</code>, which is the whole point.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">macro_rules!</span> golden_tests <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>    ($($name:ident: $msg:expr,)*) =&gt; <span class="op">{</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>    $(</span>
+<span id="cb1-4"><a href="#cb1-4"></a>        <span class="kw">mod</span> $name <span class="op">{</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>            <span class="kw">use</span> <span class="pp">draft_shared::</span>*;</span>
+<span id="cb1-6"><a href="#cb1-6"></a>            <span class="kw">use</span> <span class="kw">super</span>::*;</span>
+<span id="cb1-7"><a href="#cb1-7"></a></span>
+<span id="cb1-8"><a href="#cb1-8"></a>            <span class="kw">use</span> <span class="kw">crate</span>::filename;</span>
+<span id="cb1-9"><a href="#cb1-9"></a>            <span class="kw">use</span> ciborium;</span>
+<span id="cb1-10"><a href="#cb1-10"></a>            <span class="kw">use</span> <span class="pp">std::</span>io;</span>
+<span id="cb1-11"><a href="#cb1-11"></a></span>
+<span id="cb1-12"><a href="#cb1-12"></a>            <span class="at">#[</span>test<span class="at">]</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a>            <span class="kw">fn</span> serialize() -&gt; <span class="pp">io::</span><span class="dt">Result</span>&lt;()&gt; <span class="op">{</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a>                <span class="kw">let</span> f_name = filename(<span class="pp">stringify!</span>($name));</span>
+<span id="cb1-15"><a href="#cb1-15"></a>                <span class="pp">println!</span>(<span class="st">&quot;{f_name}&quot;</span>);</span>
+<span id="cb1-16"><a href="#cb1-16"></a>                <span class="kw">let</span> expected: <span class="dt">Vec</span>&lt;<span class="dt">u8</span>&gt; = <span class="pp">std::fs::</span>read(f_name)?;</span>
+<span id="cb1-17"><a href="#cb1-17"></a>                <span class="kw">let</span> <span class="kw">mut</span> actual: <span class="dt">Vec</span>&lt;<span class="dt">u8</span>&gt; = <span class="dt">Vec</span>::new();</span>
+<span id="cb1-18"><a href="#cb1-18"></a>                <span class="pp">ciborium::ser::</span>into_writer(&amp;$msg, &amp;<span class="kw">mut</span> actual).map_err(|e| <span class="pp">io::Error::</span>new(<span class="pp">io::ErrorKind::</span>Other, e))?;</span>
+<span id="cb1-19"><a href="#cb1-19"></a>                <span class="pp">assert_eq!</span>(&amp;actual, &amp;expected);</span>
+<span id="cb1-20"><a href="#cb1-20"></a>                <span class="cn">Ok</span>(())</span>
+<span id="cb1-21"><a href="#cb1-21"></a>            <span class="op">}</span></span>
+<span id="cb1-22"><a href="#cb1-22"></a></span>
+<span id="cb1-23"><a href="#cb1-23"></a>            <span class="at">#[</span>test<span class="at">]</span></span>
+<span id="cb1-24"><a href="#cb1-24"></a>            <span class="kw">fn</span> deserialize() -&gt; <span class="pp">io::</span><span class="dt">Result</span>&lt;()&gt; <span class="op">{</span></span>
+<span id="cb1-25"><a href="#cb1-25"></a>                <span class="kw">let</span> file = <span class="pp">std::fs::File::</span>open(filename(<span class="pp">stringify!</span>($name)))?;</span>
+<span id="cb1-26"><a href="#cb1-26"></a>                <span class="kw">let</span> actual: Message = <span class="pp">ciborium::de::</span>from_reader(file).map_err(|e| <span class="pp">io::Error::</span>new(<span class="pp">io::ErrorKind::</span>Other, e))?;</span>
+<span id="cb1-27"><a href="#cb1-27"></a>                <span class="pp">assert_eq!</span>(actual, $msg);</span>
+<span id="cb1-28"><a href="#cb1-28"></a>                <span class="cn">Ok</span>(())</span>
+<span id="cb1-29"><a href="#cb1-29"></a>            <span class="op">}</span></span>
+<span id="cb1-30"><a href="#cb1-30"></a></span>
+<span id="cb1-31"><a href="#cb1-31"></a>            <span class="at">#[</span>test<span class="at">]</span></span>
+<span id="cb1-32"><a href="#cb1-32"></a>            <span class="at">#[</span>ignore<span class="at">]</span></span>
+<span id="cb1-33"><a href="#cb1-33"></a>            <span class="kw">fn</span> save() -&gt; <span class="pp">io::</span><span class="dt">Result</span>&lt;()&gt; <span class="op">{</span></span>
+<span id="cb1-34"><a href="#cb1-34"></a>                <span class="kw">let</span> file = <span class="pp">std::fs::File::</span>create(filename(<span class="pp">stringify!</span>($name)))?;</span>
+<span id="cb1-35"><a href="#cb1-35"></a>                <span class="pp">ciborium::ser::</span>into_writer(&amp;$msg, file).map_err(|e| <span class="pp">io::Error::</span>new(<span class="pp">io::ErrorKind::</span>Other, e))?;</span>
+<span id="cb1-36"><a href="#cb1-36"></a>                <span class="cn">Ok</span>(())</span>
+<span id="cb1-37"><a href="#cb1-37"></a>            <span class="op">}</span></span>
+<span id="cb1-38"><a href="#cb1-38"></a>        <span class="op">}</span></span>
+<span id="cb1-39"><a href="#cb1-39"></a>    )*</span>
+<span id="cb1-40"><a href="#cb1-40"></a>    <span class="op">}</span></span>
+<span id="cb1-41"><a href="#cb1-41"></a><span class="op">}</span></span>
+<span id="cb1-42"><a href="#cb1-42"></a></span>
+<span id="cb1-43"><a href="#cb1-43"></a><span class="kw">fn</span> filename(name: &amp;<span class="dt">str</span>) -&gt; <span class="dt">String</span> <span class="op">{</span></span>
+<span id="cb1-44"><a href="#cb1-44"></a>    <span class="pp">format!</span>(<span class="st">&quot;golden/{name}.cbor&quot;</span>).to_string()</span>
+<span id="cb1-45"><a href="#cb1-45"></a><span class="op">}</span></span></code></pre></div>
+<p>It’s a bit annoying that I need a module for each example, but we apparently don’t have the ability to build identifiers from string templates like <code>"serialize_#{$name}"</code>. Figuring out why that is will be a project for another day…. The module in turn forces a bunch of repeated imports. This feels like an odd use of <code>--ignored</code>; I would prefer an explicit <code>--save</code>. It’s probably fine as long as this test suite only runs this style of test. If you wanted to use <code>ignored</code> for something else, I think these tests could test some env var instead, with similar results.</p>
+<p>Calling the macro looks like:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1"></a><span class="pp">golden_tests!</span> <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>    authn: <span class="pp">Message::</span>NotAuthenticatedError,</span>
+<span id="cb2-3"><a href="#cb2-3"></a>    made_up_example: <span class="pp">Message::</span><span class="cn">Some</span>(other, constructor),</span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="op">}</span></span></code></pre></div>
+<p>I got the core of the macro approach from https://stackoverflow.com/questions/34662713/how-can-i-create-parameterized-tests-in-rust/34666891#34666891 .</p>
+<p>I don’t write golden tests like this when the only consumers of the interface are deployed in lockstep. If they’re in the same language, simple serialize-the-deserialize tests suffice. When the client is in a different language, integration tests get harder, but are still more valuable than golden tests. I like golden tests like these when the clients are developed by others, on a different timeline, so I can communicate changes with concrete encoded messages, or when I’m being especially careful about staged deploys to minimize downtime / errors. (Or when I’m having fun thinking about how I <em>would</em> acheive these goals.)</p>
+
+      </div>
+  </body>
+</html>
