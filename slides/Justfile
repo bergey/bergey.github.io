@@ -1,0 +1,7 @@
+html := "2022-11-13-CRDTs.html"
+
+CRDTs:
+    # org-export 2022-11-13-CRDTs.org to reveal first
+    sed -i '' s,file://,, {{html}}
+    sed -i '' '/<script src="reveal.js/js/reveal.js"></script>/i <script src="reveal.js//lib/js/head.min.js"></script>' {{html}}
+
