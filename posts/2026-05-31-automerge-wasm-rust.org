@@ -1,0 +1,124 @@
+I'm writing a web app intended to run on my phone when I'm offline, and also reliably sync changes between devices.  I'm using the [[https://docs.rs/automerge/latest/automerge/][Automerge]] CRDT library, Rust compiled to webassembly, and some [[https://web.dev/explore/progressive-web-apps?hl=en][Progressive Web App (PWA)]] features to make it behave more like a native app.  I'd like to see many more applications written this way, but there are many rough edges; I hope these notes help you avoid some of them.
+
+I've only been working on my current project for a couple of weeks, but it builds on another PWA I built 3 years ago, with a different domain but similar architecture.
+
+I like a clear separation & interface between CRDT code and DOM, each of which is complex enough on its own.  I also like to ensure that DOM updates caused by local changes go through the same code path as changes that originate on other machines.  This makes testing easier – less code, and especially less code that requires two machines / processes to test.  More in a minute on how this leads me to an Action enum.
+
+Automerge is schemaless.  I have a two-pronged approach to enforcing the schema I want:
+1. wrap the Automerge doc in a domain type, with public getters for each field
+2. define an enum with every Action that can modify the document, and an =apply= method on the domain type
+
+This feels a lot like a Reducer (in React or Elm or similar, or a fold more generally), but here we actually have two:
+- Actions - from GUI, applied to CRDT
+- Events - from CRDT, applied to DOM / GUI
+
+These differ in ways familiar from any HTTP API or set of SQL queries, and a few specific to Automerge:
+1. IDs are created by the CRDT, so Actions lack IDs, while the resulting Event has one
+2. Automerge lacks a Set.  I use List, so inserted records effectively have two IDs
+3. List delete is by position, not ID
+
+Right now I am using a parameterized type for Action / Event.  I'm not sure how this will feel as my schema grows.  Here the default parameter values are for the GUI->CRDT direction, and =Event= is an alias for the CRDT->GUI direction.  Operations like =SetTitle= do not need additional type parameters.
+
+#+begin_src rust
+pub enum Action<AR = (), DR = RecordId> {
+    AddRecord(AR),
+    SetTitle(RecordId, String),
+    DeleteRecord(DR),
+}
+pub type Event = Action<(usize, RecordId), usize>;
+#+end_src
+
+Automerge provides a method =diff_incremental= that returns =Vec<Patch>=.  I implement =Event::from_patch(p: Patch) -> Result<Event>= and another function to apply =Event= to the DOM (actually to reactive signals which in turn trigger DOM updates).
+
+A few =proptest= tests help ensure that I keep these functions in sync. Any change from an Action can be reconstructed from the Automerge Patch, the getters work on any state that can be reached by a sequence of Actions, the DOM after a sequence of Events is the same as after loading the document from disk and hydrating.
+
+I prefer these enums to methods on my CRDT / DOM wrappers because:
+1. parity between the two directions is explicit; the compiler catches a missing case in either =apply= method
+2. the =Patch -> Event= function can be used on the server to validate incoming changes, where the reactive signals are not needed.  (We don't care about the actual Event, just whether we were able to parse the Patch into *some* Event.)
+3. the type signatures of =from_patch= & =apply= are simple, do not expose other public methods on the domain class
+4. event queues between different parts of the app make order explicit, and allow future multithreading
+
+Concurrency is a hazard for Rust applications running in the browser.  The Javascript concurrency model is basically that one task runs at a time (a promise or event handler), mutable references are common, and any invariants should be restored before the next =await=.  Rust concurrency primitives in =std::sync=, notably =Mutex= and =mpsc= queues, compile fine, but behave quite differently than they do on Linux or MacOS.  =Mutex= panics instead of waiting for the lock, and does not poison.  =mpsc= has a spinlock when waiting for a message.  Panics from webassembly are especially cryptic.
+
+The queue in [[https://docs.rs/futures/latest/futures/channel/mpsc/index.html][futures::channel::mpsc]] is working for me so far.  I have not yet tested heavily, or read the implementation.
+
+When the app starts, it loads the document from disk, wires up the two queues, and renders the DOM from the hydrated reactive signals.  Reactive signals can safely be shared; the last task spawned takes ownership of the =Library=, which is the automerge document.
+
+#+begin_src rust
+  let (tx_a, mut rx_a) = mpsc::channel::<Action>(3);
+  let (tx_e, mut rx_e) = mpsc::channel::<Event>(3);
+  let mut tx_e = Sender::new(tx_e);
+
+  spawn_local((async move || {
+      let mut library = library::Library::load("my_library").await;
+      let reactive = render::ReactiveLibrary::from_replicated(&library);
+      let mut reactive_for_updates = reactive.clone();
+
+      spawn_local(async move {
+          loop {
+              match rx_e.recv().await {
+                  Ok(action) => reactive_for_updates.apply(action),
+                  Err(_) => break, // TODO should raise a JS exception, reload the page or something
+              }
+          }
+      });
+
+      spawn_local(async move {
+          loop {
+              // TODO select! here, local or remote edit
+              match rx_a.recv().await {
+                  Ok(event) => {
+                      let patches = library.apply(&event);
+                      for p in patches {
+                          tx_e.send(p);
+                      }
+                  }
+                  Err(_) => break, // TODO should raise a JS exception, reload the page or something
+              }
+          }
+      });
+
+      let _ =
+          leptos::mount::mount_to_body(move || render::body(reactive, Sender::new(tx_a)));
+  })());
+#+end_src
+
+There are also a couple of hazards working with the Rust bindings to IndexedDB for local storage.
+
+The DB API is so flexible, and =JsValue= so uninformative, that it's not obvious how to roundtrip the =Vec<u8>= from automerge.  I finally arrived at this, going through =Uint8Array=.  
+
+The error type in the library cannot be lifted into [[https://docs.rs/anyhow/latest/anyhow/][anyhow]] (because =JsValue= is not Sync).  I log errors as they arise, and fall back to an empty Automerge document if loading fails.  In the code snippet below, =log_error= goes from =Result= to =Option=, making it easy to chain methods with disparate error types, some of which can't be upcast to =anyhow=.
+
+#+begin_src rust
+      pub async fn load(_id: &str) -> Library {
+          Self::try_load()
+              .await
+              .log_error()
+              .and_then(|x| {
+                  x.dyn_into().map_err(|_| "dyn_into failed").log_error()
+              })
+              .map(|array: Uint8Array| array.to_vec())
+              .and_then(|bytes: Vec<u8>| AutoCommit::load(bytes.as_ref()).log_error())
+              // TODO validate schema
+              .map(|mut am| {
+                  am.update_diff_cursor();
+                  Self::from_replicated(am)
+              })
+              .unwrap_or_else(Library::new)
+      }
+
+  async fn try_save_bytes(bytes: &[u8]) -> OpenDbResult<()> {
+      let db = open_database().await?;
+      let transaction = db
+          .transaction("libraries")
+          .with_mode(TransactionMode::Readwrite)
+          .build()?;
+      let store = transaction.object_store("libraries")?;
+      store
+          .put(Into::<JsValue>::into(Uint8Array::from(bytes)))
+          .with_key("my_library")
+          .build()?; // TODO multiple libraries
+      transaction.commit().await?;
+      Ok(())
+  }
+#+end_src
