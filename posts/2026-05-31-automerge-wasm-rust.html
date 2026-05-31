@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" charset="UTF-8" />
+    <title>Teal Labs - Automerge, queues, web browsers</title>
+    <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  </head>
+  <body>
+    <div class="sidebar">
+      <ul>
+        <li><a href="../">Blog</a></li>
+        <li><a href="../bergey.html">Daniel</a></li>
+        <li><a href="https://christalee.teallabs.org">Christalee</a></li>
+        <li><a href="../archive.html">Archive</a></li>
+      </ul>
+    </div>
+    <div class="content">
+      <h1>Automerge, queues, web browsers</h1>
+
+      <div class="info">
+        Posted on May 31, 2026
+    
+        by <a href="../tags/Daniel.html">Daniel</a>
+    
+      </div>
+
+      <p>
+        I'm writing a web app intended to run on my phone when I'm offline, and also reliably sync changes between devices.  I'm using the <a href="https://docs.rs/automerge/latest/automerge/">Automerge</a> CRDT library, Rust compiled to webassembly, and some <a href="https://web.dev/explore/progressive-web-apps?hl=en">Progressive Web App (PWA)</a> features to make it behave more like a native app.  I'd like to see many more applications written this way, but there are many rough edges; I hope these notes help you avoid some of them.
+      </p>
+
+      <p>
+        I like a clear separation &amp; interface between CRDT code and DOM, each of which is complex enough on its own.  I also like to ensure that DOM updates caused by local changes go through the same code path as changes that originate on other machines.  This makes testing easier – less code, and especially less code that requires two machines / processes to test.  More in a minute on how this leads me to an Action enum.
+      </p>
+
+      <p>
+        Automerge is schemaless.  I have a two-pronged approach to enforcing the schema I want:
+      </p>
+      <ol class="org-ol">
+        <li>wrap the Automerge doc in a domain type, with public getters for each field</li>
+        <li>define an enum with every Action that can modify the document, and an <code>apply</code> method on the domain type</li>
+      </ol>
+
+      <p>
+        This feels a lot like a Reducer (in React or Elm or similar, or a fold more generally), but here we actually have two:
+      </p>
+      <ul class="org-ul">
+        <li>Actions - from GUI, applied to CRDT</li>
+        <li>Events - from CRDT, applied to DOM / GUI</li>
+      </ul>
+
+      <p>
+        These differ in ways familiar from any HTTP API or set of SQL queries, and a few specific to Automerge:
+      </p>
+      <ol class="org-ol">
+        <li>IDs are created by the CRDT, so Actions lack IDs, while the resulting Event has one</li>
+        <li>Automerge lacks a Set.  I use List, so inserted records effectively have two IDs</li>
+        <li>List delete is by position, not ID</li>
+      </ol>
+
+      <p>
+        Right now I am using a parameterized type for Action / Event.  I'm not sure how this will feel as my schema grows.  Here the default parameter values are for the GUI-&gt;CRDT direction, and <code>Event</code> is an alias for the CRDT-&gt;GUI direction.  Operations like <code>SetTitle</code> do not need additional type parameters.
+      </p>
+
+      <div class="org-src-container">
+        <pre class="src src-rust"><code>pub enum Action&lt;AR = (), DR = RecordId&gt; {
+    AddRecord(AR),
+    SetTitle(RecordId, String),
+    DeleteRecord(DR),
+}
+pub type Event = Action&lt;(usize, RecordId), usize&gt;;
+        </code></pre>
+      </div>
+
+      <p>
+        Automerge provides a method <code>diff_incremental</code> that returns <code>Vec&lt;Patch&gt;</code>.  I implement <code>Event::from_patch(p: Patch) -&gt; Result&lt;Event&gt;</code> and another function to apply <code>Event</code> to the DOM (actually to reactive signals which in turn trigger DOM updates).
+      </p>
+
+      <p>
+        A few <code>proptest</code> tests help ensure that I keep these functions in sync. Any change from an Action can be reconstructed from the Automerge Patch, the getters work on any state that can be reached by a sequence of Actions, the DOM after a sequence of Events is the same as after loading the document from disk and hydrating.
+      </p>
+
+      <p>
+        I prefer these enums to methods on my CRDT / DOM wrappers because:
+      </p>
+      <ol class="org-ol">
+        <li>parity between the two directions is explicit; the compiler catches a missing case in either <code>apply</code> method</li>
+        <li>the <code>Patch -&gt; Event</code> function can be used on the server to validate incoming changes, where the reactive signals are not needed.  (We don't care about the actual Event, just whether we were able to parse the Patch into <b>some</b> Event.)</li>
+        <li>the type signatures of <code>from_patch</code> &amp; <code>apply</code> are simple, do not expose other public methods on the domain class</li>
+        <li>event queues between different parts of the app make order explicit, and allow future multithreading</li>
+      </ol>
+
+      <p>
+        Concurrency is a hazard for Rust applications running in the browser.  The Javascript concurrency model is basically that one task runs at a time (a promise or event handler), mutable references are common, and any invariants should be restored before the next <code>await</code>.  Rust concurrency primitives in <code>std::sync</code>, notably <code>Mutex</code> and <code>mpsc</code> queues, compile fine, but behave quite differently than they do on Linux or MacOS.  <code>Mutex</code> panics instead of waiting for the lock, and does not poison.  <code>mpsc</code> has a spinlock when waiting for a message.  Panics from webassembly are especially cryptic.
+      </p>
+
+      <p>
+        The queue in <a href="https://docs.rs/futures/latest/futures/channel/mpsc/index.html">futures::channel::mpsc</a> is working for me so far.  I have not yet tested heavily, or read the implementation.
+      </p>
+
+      <p>
+        When the app starts, it loads the document from disk, wires up the two queues, and renders the DOM from the hydrated reactive signals.  Reactive signals can safely be shared; the last task spawned takes ownership of the <code>Library</code>, which is the automerge document.
+      </p>
+
+      <div class="org-src-container">
+        <pre class="src src-rust"><code>let (tx_a, mut rx_a) = mpsc::channel::&lt;Action&gt;(3);
+let (tx_e, mut rx_e) = mpsc::channel::&lt;Event&gt;(3);
+let mut tx_e = Sender::new(tx_e);
+
+spawn_local((async move || {
+    let mut library = library::Library::load("my_library").await;
+    let reactive = render::ReactiveLibrary::from_replicated(&amp;library);
+    let mut reactive_for_updates = reactive.clone();
+
+    spawn_local(async move {
+        loop {
+            match rx_e.recv().await {
+                Ok(action) =&gt; reactive_for_updates.apply(action),
+                Err(_) =&gt; break, // TODO should raise a JS exception, reload the page or something
+            }
+        }
+    });
+
+    spawn_local(async move {
+        loop {
+            // TODO select! here, local or remote edit
+            match rx_a.recv().await {
+                Ok(event) =&gt; {
+                    let patches = library.apply(&amp;event);
+                    for p in patches {
+                        tx_e.send(p);
+                    }
+                }
+                Err(_) =&gt; break, // TODO should raise a JS exception, reload the page or something
+            }
+        }
+    });
+
+    let _ =
+        leptos::mount::mount_to_body(move || render::body(reactive, Sender::new(tx_a)));
+})());
+        </code></pre>
+      </div>
+
+      <p>
+        There are also a couple of hazards working with the Rust bindings to IndexedDB for local storage.
+      </p>
+
+      <p>
+        The DB API is so flexible, and <code>JsValue</code> so uninformative, that it's not obvious how to roundtrip the <code>Vec&lt;u8&gt;</code> from automerge.  I finally arrived at this, going through <code>Uint8Array</code>.  
+      </p>
+
+      <p>
+        The error type in the library cannot be lifted into <a href="https://docs.rs/anyhow/latest/anyhow/">anyhow</a> (because <code>JsValue</code> is not Sync).  I log errors as they arise, and fall back to an empty Automerge document if loading fails.  In the code snippet below, <code>log_error</code> goes from <code>Result</code> to <code>Option</code>, making it easy to chain methods with disparate error types, some of which can't be upcast to <code>anyhow</code>.
+      </p>
+
+      <div class="org-src-container">
+        <pre class="src src-rust"><code>    pub async fn load(_id: &amp;str) -&gt; Library {
+        Self::try_load()
+            .await
+            .log_error()
+            .and_then(|x| {
+                x.dyn_into().map_err(|_| "dyn_into failed").log_error()
+            })
+            .map(|array: Uint8Array| array.to_vec())
+            .and_then(|bytes: Vec&lt;u8&gt;| AutoCommit::load(bytes.as_ref()).log_error())
+            // TODO validate schema
+            .map(|mut am| {
+                am.update_diff_cursor();
+                Self::from_replicated(am)
+            })
+            .unwrap_or_else(Library::new)
+    }
+
+async fn try_save_bytes(bytes: &amp;[u8]) -&gt; OpenDbResult&lt;()&gt; {
+    let db = open_database().await?;
+    let transaction = db
+        .transaction("libraries")
+        .with_mode(TransactionMode::Readwrite)
+        .build()?;
+    let store = transaction.object_store("libraries")?;
+    store
+        .put(Into::&lt;JsValue&gt;::into(Uint8Array::from(bytes)))
+        .with_key("my_library")
+        .build()?; // TODO multiple libraries
+    transaction.commit().await?;
+    Ok(())
+}
+        </code></pre>
+      </div>
+    </div>
+  </body>
+</html>

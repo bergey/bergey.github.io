@@ -18,6 +18,30 @@
     <div class="content">
         <h1>Blog</h1>
 
+      <a href="./posts/2026-05-31-automerge-wasm-rust.html"><h2>Automerge, queues, web browsers</h2></a>
+
+      <div class="info">
+        Posted on May 31, 2026
+    
+        by <a href="../tags/Daniel.html">Daniel</a>
+    
+      </div>
+
+      <p>
+        I'm writing a web app intended to run on my phone when I'm offline, and also reliably sync changes between devices.  I'm using the <a href="https://docs.rs/automerge/latest/automerge/">Automerge</a> CRDT library, Rust compiled to webassembly, and some <a href="https://web.dev/explore/progressive-web-apps?hl=en">Progressive Web App (PWA)</a> features to make it behave more like a native app.  I'd like to see many more applications written this way, but there are many rough edges; I hope these notes help you avoid some of them.
+      </p>
+
+      <p>
+        I like a clear separation &amp; interface between CRDT code and DOM, each of which is complex enough on its own.  I also like to ensure that DOM updates caused by local changes go through the same code path as changes that originate on other machines.  This makes testing easier – less code, and especially less code that requires two machines / processes to test.  More in a minute on how this leads me to an Action enum.
+      </p>
+
+      <p>
+        Automerge is schemaless.  I have a two-pronged approach to enforcing the schema I want:
+        </p>
+
+      <a href="./posts/2026-05-31-automerge-wasm-rust.html">Read more</a>
+
+
         <a href="./posts/2023-02-11-rust-webassembly.html"><h2>Rust & WebAssembly</h2></a>
 <div class="info">
     Posted on February 11, 2023
